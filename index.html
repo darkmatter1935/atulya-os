@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#211638">
+<title>ATULYA OS 2.0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#261b3d;--deep:#211638;--panel:#f4edff;--paper:#fffaff;--lav:#d9c5ff;--pink:#f7c9e8;
+  --purple:#9672d8;--violet:#6c4ca5;--line:#cdb8ea;--muted:#76668e;--gold:#ffd86b;
+  --px:'Press Start 2P',monospace;--fnt:'VT323','Courier New',monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--deep);color:var(--ink);font-family:var(--fnt);font-size:19px;line-height:1.2}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+.px{font-family:var(--px)}
+.hidden{display:none!important}
+.small{font-size:16px;color:var(--muted)}
+.center{text-align:center}
+a[data-open]{color:var(--violet);text-decoration:underline;cursor:pointer}
+h2{font-family:var(--px);font-size:13px;line-height:1.7;margin:0 0 10px;color:#5e4389}
+h3{font-family:var(--px);font-size:9px;letter-spacing:1px;margin:20px 0 8px;color:#6c4ca5;text-transform:uppercase}
+p{margin:6px 0}
+ul,ol{margin:6px 0;padding-left:24px}
+.btn{background:#e4d5f8;border:2px solid #fff;border-right-color:#987fb8;border-bottom-color:#987fb8;padding:5px 12px;margin:3px 4px 3px 0;box-shadow:1px 1px 0 #5b477d}
+.btn:hover{background:#d8c4f5}
+.btn:active,.btn.on{border-color:#987fb8;border-right-color:#fff;border-bottom-color:#fff;background:#cbb6ec}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn.big{font-size:22px;padding:10px 18px}
+.btn.primary{background:var(--violet);color:#fff;border-color:#b9a2e6;border-right-color:#3d2a63;border-bottom-color:#3d2a63}
+.btn.primary:hover{background:#7d5bb8}
+input[type=text],input[type=password],textarea{width:100%;padding:6px 8px;border:2px solid #8e78ae;border-right-color:#fff;border-bottom-color:#fff;background:var(--paper);outline:none}
+input[type=text]:focus,input[type=password]:focus{background:#fff}
+.row{display:flex;gap:6px;align-items:center}
+.row input{flex:1}
+.panel{background:var(--paper);border:2px solid #dccdf0;padding:10px 12px;margin:8px 0;box-shadow:2px 2px 0 #cdb8ea}
+.pill{display:inline-block;padding:2px 7px;background:#eadcfb;border:1px solid #c9b2e8;font-size:15px;margin:2px 2px 2px 0}
+.pill.critical{background:#ffd3e3;border-color:#e89ab8}.pill.wontfix{background:#e1e1f5}.pill.feature{background:#d6f5e3;border-color:#9fd8b6}
+.progress{height:14px;background:#e4d8f2;border:2px solid #8e78ae;border-right-color:#fff;border-bottom-color:#fff;margin:6px 0;overflow:hidden}
+.progress>span{display:block;height:100%;width:0;background:repeating-linear-gradient(90deg,#9e7ad1 0 8px,#b896e3 8px 10px);transition:width .35s steps(6)}
+.hud{display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px 12px;font-size:17px;color:#5d4a79;margin:6px 0}
+.tabs{display:flex;gap:2px;border-bottom:2px solid #fff;margin-bottom:12px;flex-wrap:wrap}
+.tab{background:#ddd0ef;border:2px solid #fff;border-bottom:0;padding:5px 10px;font-size:17px;position:relative;top:2px}
+.tab.active{background:var(--panel);font-weight:bold}
+.tab .ok{font-style:normal;color:#2f8a57}
+@keyframes blink{50%{opacity:0}}
+@keyframes float{50%{transform:translateY(-6px)}}
+@keyframes pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+
+/* ---------- BOOT ---------- */
+#boot{position:fixed;inset:0;z-index:20000;background:#0d0818;color:#d9c5ff}
+.boot-pane{position:absolute;inset:0}
+#bios{padding:22px;font-size:20px;overflow:hidden}
+#bios pre{margin:0;font-family:var(--fnt);white-space:pre-wrap}
+#bios .bios-logo{float:right;width:70px;margin:0 0 10px 10px}
+.boot-skip{position:absolute;bottom:16px;right:20px;opacity:.6;animation:blink 1s steps(2) infinite;font-size:17px}
+#splash{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:16px}
+#splash .heart-big{width:72px;animation:float 1.6s ease-in-out infinite}
+.logo{font-family:var(--px);font-size:clamp(20px,5vw,40px);letter-spacing:4px;color:#fff;text-shadow:4px 4px 0 #6c4ca5}
+.logo-sub{font-family:var(--px);font-size:9px;letter-spacing:2px;color:#cdb8ff}
+.bootbar{width:min(320px,70vw);height:22px;border:3px solid #fff;padding:3px}
+.bootbar span{display:block;height:100%;width:0;background:repeating-linear-gradient(90deg,#f7c9e8 0 10px,transparent 10px 13px)}
+#bootMsg{font-size:18px;color:#bfa9e6;min-height:22px}
+#login{display:grid;place-items:center;background:linear-gradient(145deg,#352450,#4b3470 50%,#251a3d)}
+.login-box{width:min(390px,calc(100vw - 32px));background:var(--panel);border:3px solid #fff;box-shadow:8px 8px 0 #160e26;color:var(--ink);animation:pop .2s steps(3)}
+.login-body{padding:18px;text-align:center}
+.login-av{width:96px;height:96px;margin:4px auto 10px;background:linear-gradient(135deg,#f7c9e8,#9672d8);border:3px solid #fff;box-shadow:3px 3px 0 #34234f;display:grid;place-items:center;font-size:52px;overflow:hidden}
+.login-av img{width:100%;height:100%;object-fit:cover}
+.login-name{font-family:var(--px);font-size:13px;margin-bottom:12px}
+#loginForm .row{margin:8px 0}
+#loginReply{min-height:22px;color:var(--violet);font-weight:bold}
+
+/* ---------- DESKTOP ---------- */
+#desktop{position:fixed;left:0;right:0;top:0;bottom:44px;overflow:hidden;z-index:1}
+#desktop::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.07;background:repeating-linear-gradient(0deg,transparent 0 2px,#000 3px)}
+body[data-wall=nebula] #desktop{background:radial-gradient(circle at 15% 15%,#8063b7 0 1px,transparent 2px),radial-gradient(circle at 78% 28%,#e7d5ff 0 1px,transparent 2px),radial-gradient(circle at 45% 72%,#a78bd5 0 1px,transparent 2px),linear-gradient(145deg,#352450 0%,#4b3470 48%,#251a3d 100%);background-size:53px 53px,71px 71px,89px 89px,auto}
+body[data-wall=sunset] #desktop{background:radial-gradient(circle at 72% 64%,#ffe7a8 0 70px,#ffc58a 71px 75px,transparent 76px),repeating-linear-gradient(0deg,transparent 0 10px,#ffffff12 10px 12px),linear-gradient(#ffb3c7 0%,#e59ad0 38%,#9a6bc9 70%,#4b3470 100%)}
+body[data-wall=mint] #desktop{background:radial-gradient(circle at 20% 20%,#fff 0 1px,transparent 2px),linear-gradient(#c9f2e3,#a7d8dc 50%,#7f9fd0);background-size:40px 40px,auto}
+body[data-wall=grid] #desktop{background:repeating-linear-gradient(90deg,transparent 0 46px,#ff7ab640 46px 48px),repeating-linear-gradient(0deg,transparent 0 30px,#ff7ab630 30px 32px),linear-gradient(#170a2b,#3a1d5c 60%,#5a2370)}
+#icons{position:absolute;top:14px;left:10px;bottom:10px;display:grid;grid-auto-flow:column;grid-template-rows:repeat(auto-fill,94px);grid-auto-columns:90px;gap:4px 6px;z-index:2}
+.app-icon{width:90px;height:94px;background:none;border:1px solid transparent;color:#fff;display:flex;flex-direction:column;align-items:center;gap:7px;padding:6px 2px;text-shadow:1px 1px 0 #211638,2px 2px 0 #211638;font-size:17px;line-height:1}
+.app-icon:hover,.app-icon:focus-visible{background:#ffffff22;border:1px dashed #f0dfff;outline:none}
+.icon-art{width:48px;height:44px;flex:none;display:grid;place-items:center;font-size:26px;background:#e9d8ff;border:3px solid #fff0ff;box-shadow:3px 3px 0 #211638;position:relative;text-shadow:none}
+.icon-art .lock{position:absolute;right:-10px;top:-9px;font-size:15px;font-style:normal;background:#fff;border:2px solid #6c4ca5;width:22px;height:22px;display:grid;place-items:center}
+.app-icon .label{text-align:center;line-height:.95}
+#widgets{position:absolute;right:16px;top:14px;width:260px;display:flex;flex-direction:column;gap:14px;z-index:2}
+.widget{background:#f4edffee;border:3px solid #fff;box-shadow:4px 4px 0 #160e26;padding:10px 12px}
+.widget .wt{font-family:var(--px);font-size:8px;color:#6c4ca5;margin-bottom:8px;letter-spacing:1px}
+.brand{font-family:var(--px);font-size:14px;color:#4b3470;line-height:1.6}
+.brand small{display:block;font-size:7px;color:var(--muted);letter-spacing:1px}
+.cd{display:flex;gap:6px;justify-content:space-between}
+.cd div{flex:1;text-align:center;background:#2b1c45;color:#fff;padding:6px 0;border:2px solid #fff}
+.cd b{display:block;font-family:var(--px);font-size:13px;color:var(--pink)}
+.cd span{font-size:14px;color:#d9c7f5}
+.sticky{background:#fff6b8;border-color:#fffbe0;transform:rotate(1.5deg);font-size:18px;white-space:pre-line}
+.sticky .wt{color:#9a7a1c}
+.quest{list-style:none;padding:0;margin:0;font-size:17px}
+.quest li{padding:2px 0}
+.quest li.done{color:#2f8a57;text-decoration:line-through}
+
+/* ---------- WINDOWS ---------- */
+.window{position:absolute;display:none;flex-direction:column;background:var(--panel);border:3px solid #fff;outline:1px solid #34234f;box-shadow:6px 6px 0 #160e26;min-width:280px;min-height:160px;max-width:calc(100% - 8px);z-index:10;resize:both;overflow:hidden}
+.window.open{display:flex;animation:pop .16s steps(3,end)}
+.window.minimized{display:none}
+.window.max{left:0!important;top:0!important;width:100%!important;height:100%!important;max-width:none;max-height:none!important;resize:none}
+.titlebar{height:30px;flex:none;display:flex;align-items:center;gap:7px;padding:0 4px 0 8px;background:linear-gradient(90deg,#7252a6,#a48ad4);color:#fff;font-family:var(--px);font-size:9px;cursor:move;user-select:none;touch-action:none}
+.window:not(.active) .titlebar{background:linear-gradient(90deg,#8f86a3,#bab2c9)}
+.titlebar .ti{font-family:var(--fnt);font-size:17px}
+.titlebar .t{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wc{display:flex;gap:3px;flex:none}
+.wc button{width:23px;height:21px;padding:0;background:#e8dcfa;border:2px solid #fff;border-right-color:#7c639e;border-bottom-color:#7c639e;font-family:var(--fnt);font-size:18px;line-height:12px;color:var(--ink)}
+.wc button:active{border-color:#7c639e;border-right-color:#fff;border-bottom-color:#fff}
+.window-body{flex:1;overflow:auto;padding:14px 16px 18px;min-height:0}
+.statusbar{flex:none;border-top:2px solid #fff;background:#e9ddfa;font-size:15px;padding:2px 8px;color:#5d4a79;display:flex;justify-content:space-between}
+
+/* ---------- TASKBAR / START ---------- */
+#taskbar{position:fixed;left:0;right:0;bottom:0;height:44px;z-index:12000;background:#e9ddfa;border-top:3px solid #fff;box-shadow:0 -3px 0 #b59bdc;display:flex;align-items:center;gap:6px;padding:4px 6px}
+#startBtn{font-family:var(--px);font-size:10px;padding:7px 10px;margin:0;flex:none}
+#tasks{display:flex;gap:4px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none}
+.task-btn{flex:0 1 160px;min-width:44px;display:flex;align-items:center;gap:5px;white-space:nowrap;overflow:hidden;background:#ddd0ef;border:2px solid #fff;border-right-color:#8e78ae;border-bottom-color:#8e78ae;padding:4px 7px;font-size:17px}
+.task-btn .tn{overflow:hidden;text-overflow:ellipsis}
+.task-btn.active{background:#cbb6ec;border-color:#8e78ae;border-right-color:#fff;border-bottom-color:#fff;font-weight:bold}
+.tray{flex:none;display:flex;align-items:center;gap:4px;border:2px solid #8e78ae;border-right-color:#fff;border-bottom-color:#fff;padding:2px 6px;height:34px}
+.tray button{background:none;border:0;padding:0 3px;font-size:17px}
+#clock{font-size:18px;color:#4b3470;min-width:52px;text-align:right}
+#startMenu{position:fixed;left:4px;bottom:44px;z-index:12500;display:flex;width:270px;max-height:calc(100% - 52px);background:#f0e6ff;border:3px solid #fff;box-shadow:5px 5px 0 #211638}
+.sm-side{width:34px;flex:none;background:linear-gradient(#6c4ca5,#2b1c45);color:#fff;writing-mode:vertical-rl;transform:rotate(180deg);font-size:10px;padding:10px 0;letter-spacing:2px;text-align:right}
+.sm-side b{color:var(--pink)}
+.sm-main{flex:1;overflow:auto;padding:6px}
+.sm-user{display:flex;align-items:center;gap:8px;padding:4px 6px 8px;border-bottom:2px solid #fff;margin-bottom:4px;font-size:20px}
+.sm-av{font-size:26px;width:38px;height:38px;display:grid;place-items:center;background:linear-gradient(135deg,#f7c9e8,#9672d8);border:2px solid #fff;overflow:hidden}
+.sm-av img{width:100%;height:100%;object-fit:cover}
+.sm-g{font-family:var(--px);font-size:7px;color:var(--muted);padding:8px 6px 3px;letter-spacing:1px}
+#startMenu button{display:flex;align-items:center;gap:8px;width:100%;text-align:left;background:none;border:0;padding:4px 8px;font-size:18px}
+#startMenu button:hover{background:#6c4ca5;color:#fff}
+.sm-sep{border-top:2px solid #fff;margin:6px 0}
+
+/* ---------- TOASTS / OVERLAYS ---------- */
+#toasts{position:fixed;right:12px;bottom:54px;z-index:14000;display:flex;flex-direction:column;gap:8px;width:min(310px,calc(100vw - 24px));pointer-events:none}
+.toast{pointer-events:auto;cursor:pointer;background:#f6edff;border:3px solid #fff;box-shadow:4px 4px 0 #211638;padding:8px 10px;font-size:17px;display:flex;gap:10px;align-items:flex-start;animation:toastIn .22s steps(3)}
+.toast .ti{font-size:24px;line-height:1}
+.toast b{font-family:var(--px);font-size:7px;display:block;margin-bottom:5px;color:var(--violet);line-height:1.5}
+.toast.ach{background:#2b1c45;color:#fff}.toast.ach b{color:var(--gold)}
+.toast.out{opacity:0;transform:translateX(20px);transition:.25s}
+@keyframes toastIn{from{opacity:0;transform:translateY(10px)}}
+.overlay{position:fixed;inset:0;z-index:15000;background:#120b22cc;display:grid;place-items:center;padding:14px}
+.dlg{width:min(460px,100%);background:var(--panel);border:3px solid #fff;box-shadow:8px 8px 0 #160e26;animation:pop .18s steps(3);max-height:100%;display:flex;flex-direction:column}
+.dlg .titlebar{cursor:default}
+.dlg-body{padding:16px;overflow:auto}
+.dlg-btns{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;position:relative;min-height:44px}
+#dShut{transition:transform .18s}
+.lb{width:min(760px,100%)}
+.lb .ph{aspect-ratio:4/3;font-size:90px}
+.lb-nav{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+#celebrate .cele{text-align:center;color:#fff}
+.cele .trophy{font-size:80px;animation:float 1.4s ease-in-out infinite}
+.cele .px{font-size:clamp(14px,3.5vw,24px);line-height:1.6;color:var(--gold);text-shadow:3px 3px 0 #6c4ca5;margin:10px 0}
+#bsod{position:fixed;inset:0;z-index:30000;background:#2a1fa8;color:#fff;display:grid;place-items:center;padding:24px;font-size:22px;cursor:pointer}
+.bsod-in{max-width:720px}
+.bsod-title{display:inline-block;background:#c9c3ff;color:#2a1fa8;padding:2px 10px;margin-bottom:18px;font-weight:bold}
+#bsod .cur{animation:blink 1s steps(2) infinite}
+#saver{position:fixed;inset:0;z-index:25000;width:100%;height:100%;background:#000;cursor:none}
+#fx{position:fixed;inset:0;z-index:16000;pointer-events:none;width:100%;height:100%}
+#credits{background:#000;overflow:hidden;cursor:pointer;place-items:stretch}
+.roll{position:absolute;left:0;right:0;top:100%;text-align:center;color:#fff;font-family:var(--px);font-size:13px;line-height:2.4;animation:roll 34s linear forwards}
+.roll .h{color:var(--pink);font-size:9px}
+@keyframes roll{to{transform:translateY(calc(-100% - 100vh))}}
+
+/* ---------- APPS ---------- */
+.sheet{display:grid;grid-template-columns:130px 1fr;gap:16px;align-items:start}
+.avatar{background:linear-gradient(135deg,#f7c9e8,#9672d8);border:3px solid #fff;box-shadow:3px 3px 0 #34234f;aspect-ratio:1;display:grid;place-items:center;font-size:70px;position:relative;overflow:hidden}
+.avatar img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.av-tag{position:absolute;bottom:0;left:0;right:0;background:#2b1c45cc;color:#fff;font-size:7px;padding:4px;text-align:center}
+.lvl{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.lvl .progress{flex:1;min-width:120px}
+.lvlup{animation:blink 1.2s steps(2) infinite}
+.statbars .sb{display:grid;grid-template-columns:150px 1fr 44px;gap:8px;align-items:center}
+.statbars .progress{margin:3px 0}
+.equip{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.slot{display:flex;gap:10px;align-items:center;background:var(--paper);border:2px dashed #b9a2db;padding:8px;font-size:17px}
+.slot .si{font-size:28px}
+.fav-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.fav{background:var(--paper);border:2px solid #dccdf0;box-shadow:3px 3px 0 #cdb8ea;padding:12px}
+.fav .fi{font-size:30px}
+.fav b{font-family:var(--px);font-size:9px;display:block;margin:8px 0 6px;color:#5e4389;line-height:1.5}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;padding:4px}
+.polaroid{background:#fff;padding:8px 8px 10px;border:2px solid #e2d6f2;box-shadow:3px 3px 0 #c7b4e1;transform:rotate(var(--r,0deg));transition:transform .15s;text-align:left}
+.polaroid:hover,.polaroid:focus-visible{transform:rotate(0) scale(1.04);outline:none}
+.ph{aspect-ratio:4/3;display:grid;place-items:center;font-size:44px;position:relative;overflow:hidden;background:linear-gradient(135deg,var(--a),var(--b))}
+.ph::after{content:"";position:absolute;inset:0;background-image:radial-gradient(#ffffff38 1px,transparent 1.5px);background-size:6px 6px;pointer-events:none}
+.ph .pe{filter:drop-shadow(3px 3px 0 #0003);z-index:1}
+.ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:2}
+.ph .tag{position:absolute;top:6px;left:6px;font-family:var(--px);font-size:7px;background:#0006;color:#fff;padding:3px 5px;z-index:3}
+.cap{font-size:17px;margin-top:7px;line-height:1.05}
+.date{font-size:15px;color:var(--muted);margin-top:3px}
+.tapes{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.tape{background:#1e1530;color:#fff;border:3px solid #fff;box-shadow:3px 3px 0 #9a83c2;padding:10px;text-align:left}
+.tape:hover{background:#2c2045}
+.reels{display:flex;justify-content:space-around;background:#0e0a18;padding:8px;border:2px solid #4a3a6a;font-size:24px;color:#9a83c2}
+.tape .label{background:#fff6d8;color:#3d2a63;padding:6px;margin-top:8px;font-size:17px;border-left:6px solid var(--pink)}
+.tapecv{display:block;width:100%;aspect-ratio:16/9;background:#000;border:3px solid #fff;image-rendering:pixelated}
+.tapectl{display:flex;align-items:center;gap:8px;margin-top:6px}
+.tapectl .progress{flex:1;cursor:pointer;margin:0}
+.tapectl .tt{font-size:16px;color:var(--muted);white-space:nowrap}
+video.vid{width:100%;border:3px solid #fff;background:#000;max-height:60vh}
+.mail{display:grid;grid-template-columns:230px 1fr;gap:10px;min-height:340px}
+.mail-list{background:var(--paper);border:2px solid #dccdf0;overflow:auto;max-height:420px}
+.mail-item{display:block;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid #e6dbf5;padding:7px 9px;font-size:17px}
+.mail-item:hover{background:#efe5fb}
+.mail-item.sel{background:#6c4ca5;color:#fff}
+.mail-item.unread .ms{font-weight:bold}
+.mail-item .mf{font-size:15px;opacity:.8;display:flex;justify-content:space-between;gap:6px}
+.mail-view{background:var(--paper);border:2px solid #dccdf0;padding:12px 14px;overflow:auto;max-height:420px}
+.mail-view .mh{border-bottom:2px dashed #dccdf0;padding-bottom:8px;margin-bottom:10px;font-size:17px}
+.mail-view .mbody{white-space:pre-wrap;font-size:19px}
+.player{background:#2b1c45;border:3px solid #fff;padding:12px;color:#fff;box-shadow:3px 3px 0 #9a83c2}
+.lcd{background:#0f1a12;border:3px inset #4a3a6a;padding:10px;color:#9dffb0;font-size:17px}
+.lcd .now{font-family:var(--px);font-size:10px;line-height:1.6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#viz{display:block;width:100%;height:64px;margin-top:6px}
+.lcd .progress{background:#18301d;border-color:#2c4a32}.lcd .progress>span{background:#6fe38a;transition:none}
+.pctl{display:flex;align-items:center;flex-wrap:wrap;gap:2px;margin-top:10px;color:var(--ink)}
+.pctl .btn{min-width:42px}
+.vol{color:#fff;font-size:16px;margin-left:auto;display:flex;align-items:center;gap:6px}
+.playlist{list-style:none;padding:0;margin:10px 0 0;background:#1e1530;border:2px solid #4a3a6a}
+.playlist li{padding:6px 10px;cursor:pointer;display:flex;justify-content:space-between;border-bottom:1px solid #3a2b55}
+.playlist li:hover{background:#3a2b55}
+.playlist li.on{background:#6c4ca5;color:#fff}
+.love-out{font-family:var(--px);font-size:11px;line-height:1.8;color:#6c4ca5;margin-top:10px;min-height:20px}
+.love-log{font-size:16px;color:var(--muted);min-height:20px}
+.glitch{color:#d63a7a;animation:blink .4s steps(2) 6}
+.fut label{display:flex;gap:10px;align-items:center;cursor:pointer}
+.fut input{width:18px;height:18px;accent-color:#6c4ca5}
+.fut.done span{text-decoration:line-through;color:var(--muted)}
+.q{font-size:12px;line-height:1.8;margin:12px 0}
+.choice{display:block;width:100%;text-align:left;background:#eee3fb;border:2px solid #fff;border-right-color:#a38bbf;border-bottom-color:#a38bbf;padding:8px 10px;margin:6px 0;font-size:18px}
+.choice:hover:not(:disabled){background:#dfcef5}
+.choice.right{background:#c9f0d6;border-color:#6dbb8a}
+.choice.wrong{background:#ffd3e3;border-color:#e89ab8}
+.choice:disabled{cursor:default;color:var(--ink)}
+.wx-now{display:flex;align-items:center;gap:16px;background:linear-gradient(135deg,#9fc3f0,#c7a8ec);border:3px solid #fff;padding:14px;color:#2b1c45}
+.wx-now .wi{font-size:60px}
+.wx-now .wt2{font-family:var(--px);font-size:22px}
+.wx-row{display:grid;grid-template-columns:52px 40px 1fr;gap:8px;align-items:center;padding:6px 4px;border-bottom:1px dashed #dccdf0}
+.wx-row b{font-family:var(--px);font-size:9px}
+.zones{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.zone{background:#2b1c45;color:#fff;border:3px solid #fff;padding:10px;text-align:center}
+.zone .zt{font-family:var(--px);font-size:16px;color:var(--pink);margin:6px 0}
+.arcade-head{background:#2b1c45;color:#f4eaff;padding:12px;border:3px solid #fff;box-shadow:3px 3px 0 #b59bdc;margin-bottom:8px}
+.arcade-head strong{font-family:var(--px);font-size:14px;letter-spacing:2px;color:#f3cfff}
+.game-screen{background:linear-gradient(180deg,#392451,#211638);color:#f7edff;border:3px solid #fff;padding:12px;min-height:120px}
+.sim-top{display:flex;justify-content:space-between;align-items:center}
+.sim-top .big{font-size:40px}
+.sim-top .px{font-size:12px;color:var(--gold)}
+#simStory{font-size:20px;margin-top:8px}
+.match-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:420px;margin:8px auto}
+.mcard{aspect-ratio:1;border:3px solid #fff;box-shadow:3px 3px 0 #34234f;background:linear-gradient(135deg,#6c4ca5,#2b1c45);color:#fff;font-size:30px;display:grid;place-items:center;padding:0;transition:transform .15s}
+.mcard .front{display:none}
+.mcard.up,.mcard.done{background:#fffaff;transform:rotateY(180deg) scaleX(-1)}
+.mcard.up .front,.mcard.done .front{display:block}
+.mcard.up .back,.mcard.done .back{display:none}
+.mcard.done{background:#d6f5e3;cursor:default}
+.mcard .back{font-family:var(--px);font-size:14px;color:var(--pink)}
+#bossCanvas{display:block;width:100%;aspect-ratio:560/260;border:3px solid #fff;image-rendering:pixelated;touch-action:none;background:#2b1c45}
+.boss-ctl{display:flex;justify-content:center;gap:6px;margin-top:6px}
+.boss-ctl .hold{font-size:22px;min-width:64px;user-select:none;touch-action:none}
+.unlock-banner{background:#e9dcfa;border:2px dashed #9a7abd;padding:10px;margin:12px 0 0;font-size:18px}
+.unlock-banner.won{background:#fff6d0;border-color:#d4b13c}
+.ach-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+.ach{display:flex;gap:10px;align-items:center;background:var(--paper);border:2px solid #dccdf0;padding:8px;font-size:17px}
+.ach .ai{font-size:28px;width:40px;height:40px;display:grid;place-items:center;background:#2b1c45;border:2px solid #fff;flex:none}
+.ach b{font-family:var(--px);font-size:8px;line-height:1.6;display:block}
+.ach.locked{opacity:.55}.ach.locked .ai{filter:grayscale(1) brightness(.6)}
+.term{background:#120b1e;color:#d9c5ff;border:3px solid #fff;padding:10px;height:340px;overflow:auto;font-size:19px;cursor:text}
+.term .o{white-space:pre-wrap}
+.term .c{color:#fff}
+.term .e{color:#ff9ac4}
+.term .g{color:#9dffb0}
+.term-line{display:flex;gap:6px}
+.term-line input{flex:1;background:none;border:0;outline:none;color:#fff;padding:0;caret-color:var(--pink)}
+.walls{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.wall{border:3px solid #fff;box-shadow:2px 2px 0 #34234f;padding:0;background:none}
+.wall .sw{height:56px}
+.wall span{display:block;font-size:16px;padding:3px;background:var(--panel)}
+.wall.on{outline:3px solid var(--violet)}
+.tg{display:flex;gap:10px;align-items:center;padding:4px 0;cursor:pointer}
+.tg input{width:18px;height:18px;accent-color:#6c4ca5}
+.bin-row{display:grid;grid-template-columns:32px 1fr auto;gap:8px;align-items:center;padding:6px;border-bottom:1px dashed #dccdf0}
+.bin-row .bi{font-size:22px}
+.locked-screen{text-align:center;padding:20px 10px}
+.locked-screen .big{font-size:64px;animation:float 2s ease-in-out infinite}
+.locked-screen .quest{display:inline-block;text-align:left;margin:10px 0}
+.cake-scene{background:linear-gradient(#2b1c45,#45306a);border:3px solid #fff;padding:22px 10px 16px;display:flex;flex-direction:column;align-items:center;color:#fff;position:relative;overflow:hidden}
+.candles{display:flex;gap:14px;height:70px;align-items:flex-end;position:relative;z-index:2}
+.candle{width:26px;height:70px;background:none;border:0;padding:0;position:relative}
+.candle i{position:absolute;bottom:0;left:7px;width:12px;height:42px;background:repeating-linear-gradient(45deg,#fff 0 5px,#f7c9e8 5px 10px);border:2px solid #fff}
+.candle b{position:absolute;left:6px;top:2px;width:14px;height:20px;background:radial-gradient(circle at 50% 70%,#fff8c0 0 25%,#ffc04d 45%,#ff7a3d 70%,transparent 72%);animation:flick .25s steps(2) infinite alternate}
+.candle.out b{display:none}
+.candle.out::after{content:"~";position:absolute;left:8px;top:-6px;color:#cfc4e0;font-size:22px;animation:smoke 1.2s forwards}
+@keyframes flick{to{transform:scale(.88,1.08) translateY(1px)}}
+@keyframes smoke{to{transform:translateY(-22px);opacity:0}}
+.cake{display:flex;flex-direction:column;align-items:center}
+.tier{border:3px solid #fff;position:relative}
+.tier.t2{width:170px;height:46px;background:linear-gradient(#fff0fa 0 12px,#f7c9e8 12px);box-shadow:inset 0 -6px 0 #e3a8cf}
+.tier.t1{width:240px;height:58px;background:linear-gradient(#fff0fa 0 12px,#c9a6f0 12px);box-shadow:inset 0 -6px 0 #a785d6;margin-top:-3px}
+.tier::before{content:"";position:absolute;left:8px;right:8px;top:18px;height:6px;background:repeating-linear-gradient(90deg,#ffd86b 0 6px,transparent 6px 14px,#9dffb0 14px 20px,transparent 20px 28px,#fff 28px 34px,transparent 34px 42px)}
+.plate{width:280px;height:10px;background:#e6dcf5;border:3px solid #fff;margin-top:-3px}
+#cakeMsg{font-size:9px;line-height:1.8;margin-top:12px;text-align:center;color:var(--gold)}
+#cakeMsg .btn{color:var(--ink)}
+.voice{display:flex;align-items:center;gap:10px;background:#2b1c45;color:#fff;padding:10px;border:3px solid #fff}
+.voice .btn{min-width:46px;color:var(--ink)}
+.vbars{flex:1;display:flex;align-items:center;gap:2px;height:44px}
+.vbars span{flex:1;background:#6b5590;min-height:3px}
+.vbars span.p{background:var(--pink)}
+.vt{font-size:16px;white-space:nowrap}
+.letter{font-family:Georgia,'Times New Roman',serif;font-size:17px;line-height:1.85;background:#fffdf7 repeating-linear-gradient(transparent 0 30px,#e8def5 30px 31px);padding:18px 20px;border:1px solid #e0d3ef;box-shadow:3px 3px 0 #cdb8ea;white-space:pre-wrap;min-height:120px}
+.caret{animation:blink 1s steps(2) infinite;color:var(--violet)}
+.end-card{text-align:center;background:#2b1c45;color:#fff;border:3px solid #fff;padding:16px;margin-top:14px}
+.end-card .px{font-size:11px;line-height:1.8;color:var(--pink);margin-bottom:8px}
+.end-card .btn{color:var(--ink)}
+
+@media (max-width:900px){#widgets{display:none}}
+@media (max-width:700px){
+  #icons{grid-auto-flow:row;grid-template-columns:repeat(4,1fr);grid-template-rows:none;grid-auto-rows:92px;grid-auto-columns:auto;right:8px;left:8px;bottom:auto;justify-items:center}
+  .app-icon{width:80px}
+  .window{left:0!important;top:0!important;width:100%!important;height:100%!important;max-width:none;max-height:none!important;resize:none;box-shadow:none;border-width:2px}
+  .wc [data-a=max]{display:none}
+  .titlebar{cursor:default}
+  .task-btn .tn{display:none}.task-btn{flex:0 0 auto}
+  .sheet{grid-template-columns:90px 1fr}.avatar{font-size:46px}
+  .statbars .sb{grid-template-columns:110px 1fr 40px;font-size:17px}
+  .equip,.zones{grid-template-columns:1fr}
+  .mail{grid-template-columns:1fr}.mail-list{max-height:180px}
+  .walls{grid-template-columns:repeat(2,1fr)}
+  .tier.t1{width:200px}.tier.t2{width:150px}.plate{width:236px}.candles{gap:8px}
+}
+</style>
+</head>
+<body data-wall="nebula">
+
+<!-- ================= BOOT ================= -->
+<div id="boot">
+  <div id="bios" class="boot-pane"><pre id="biosText"></pre><div class="boot-skip">Press any key or tap to skip ▸</div></div>
+  <div id="splash" class="boot-pane hidden">
+    <svg class="heart-big" viewBox="0 0 7 6" shape-rendering="crispEdges" aria-hidden="true"><path fill="#f7c9e8" d="M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z"/></svg>
+    <div class="logo">ATULYA OS</div>
+    <div class="logo-sub">VERSION 2.0 · BIRTHDAY EDITION</div>
+    <div class="bootbar"><span id="bootBar"></span></div>
+    <div id="bootMsg"></div>
+  </div>
+  <div id="login" class="boot-pane hidden">
+    <div class="login-box">
+      <div class="titlebar" style="cursor:default"><span class="ti">🔑</span><span class="t">Welcome to ATULYA OS</span></div>
+      <div class="login-body">
+        <div class="login-av" id="loginAv"></div>
+        <div class="login-name" id="loginName">ATULYA</div>
+        <form id="loginForm" autocomplete="off">
+          <div class="row"><input type="password" id="loginPw" placeholder="Password" aria-label="Password"><button class="btn primary" type="submit">Log in ▸</button></div>
+        </form>
+        <div class="small" id="loginDate" style="margin-bottom:6px"></div>
+        <div class="small" id="loginHint"></div>
+        <div id="loginReply"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= DESKTOP ================= -->
+<div id="desktop">
+  <div id="icons"></div>
+  <aside id="widgets">
+    <div class="widget"><div class="brand">✦ ATULYA OS 2.0<small>BIRTHDAY EDITION · REGISTERED TO ATULYA</small><small id="brandDate" style="margin-top:4px;color:#6c4ca5"></small></div></div>
+    <div class="widget"><div class="wt">QUEST LOG</div><ul class="quest" id="questWidget"></ul></div>
+    <div class="widget sticky"><div class="wt">NOTES</div><div id="stickyText"></div></div>
+  </aside>
+
+  <!-- README -->
+  <section class="window" id="win-readme"><div class="window-body">
+    <h2>Welcome to ATULYA OS 2.0</h2>
+    <p>Hello, <b>Atulya</b>. You are now the sole user, administrator and main character of this computer.</p>
+    <div class="panel">
+      <h3 style="margin-top:4px">How this works</h3>
+      <ol>
+        <li>Explore the desktop. Every single icon does something.</li>
+        <li>Open <a data-open="games">Games.exe</a> and defeat the Final Boss.</li>
+        <li>That unlocks <b>Emergency.exe</b>. That one is important.</li>
+        <li>Achievements are hidden everywhere. Track them in <a data-open="achievements">Trophies</a>.</li>
+      </ol>
+    </div>
+    <h3>New in version 2.0</h3>
+    <ul>
+      <li>Windows you can drag, stack, minimise and maximise</li>
+      <li>A mixtape player, an inbox, and a long-distance weather station</li>
+      <li>A terminal. Try typing <b>help</b>. Or something worse.</li>
+      <li>A lore quiz, and a seriously upgraded Final Boss</li>
+      <li>Lots of achievements, a few of them very well hidden</li>
+    </ul>
+    <p class="small">Tip: the START button has everything. You could also try shutting down. (Please don't.)</p>
+  </div></section>
+
+  <!-- ABOUT -->
+  <section class="window" id="win-about"><div class="window-body" id="aboutBody"></div></section>
+
+  <!-- INBOX -->
+  <section class="window" id="win-inbox"><div class="window-body">
+    <div class="mail"><div class="mail-list" id="mailList"></div><div class="mail-view" id="mailView"><p class="small">Select a message to read it.</p></div></div>
+  </div><div class="statusbar"><span id="mailStatus"></span><span>atulissocool@atulmail.com · Connected</span></div></section>
+
+  <!-- MUSIC -->
+  <section class="window" id="win-music"><div class="window-body">
+    <div class="player">
+      <div class="lcd"><div class="now" id="mNow">NO TAPE LOADED</div><div id="mArtist">Pick a track below</div><canvas id="viz" width="300" height="64"></canvas><div class="progress"><span id="mProg"></span></div><div id="mTime" style="text-align:right">0:00</div></div>
+      <div class="pctl">
+        <button class="btn" id="mPrev" aria-label="Previous">⏮</button><button class="btn" id="mPlay" aria-label="Play">▶</button><button class="btn" id="mStop" aria-label="Stop">■</button><button class="btn" id="mNext" aria-label="Next">⏭</button>
+        <label class="vol">VOL <input type="range" id="mVol" min="0" max="100" value="60"></label>
+      </div>
+      <ol class="playlist" id="mList"></ol>
+    </div>
+  </div></section>
+
+  <!-- LOVE -->
+  <section class="window" id="win-love"><div class="window-body">
+    <h2>Love.exe calculation engine</h2>
+    <p>Peer-reviewed by absolutely nobody. Accuracy: emotionally 100%.</p>
+    <div class="panel">
+      <div class="row"><input type="text" id="loveA" value="Atulya" aria-label="First name"><span>♥</span><input type="text" id="loveB" value="Tojo" aria-label="Second name"></div>
+      <p><label for="loveN">Number of reasons she is wonderful:</label></p>
+      <div class="row"><input type="text" id="loveN" value="1" inputmode="numeric"><button class="btn primary" id="loveGo">Calculate</button></div>
+      <div class="progress"><span id="loveBar"></span></div>
+      <div class="love-log" id="loveLog">Awaiting input…</div>
+      <div class="love-out" id="loveOut"></div>
+    </div>
+    <p class="small">Scientific note: the answer is always "more than fits in this calculator".</p>
+  </div></section>
+
+  <!-- BUGS -->
+  <section class="window" id="win-bugs"><div class="window-body">
+    <h2>Official complaint register</h2>
+    <p class="small">Filed by: Tojo · Department: Boyfriend Operations</p>
+    <div id="bugList"></div>
+    <h3>Submit another complaint</h3>
+    <div class="row"><input type="text" placeholder="Describe the offence…" id="bugInput" maxlength="120"><button class="btn primary" id="bugSubmit">Submit</button></div>
+    <div id="bugReply" class="small" style="margin-top:6px"></div>
+  </div></section>
+
+  <!-- FUTURE -->
+  <section class="window" id="win-future"><div class="window-body">
+    <h2>Things we haven't done yet.</h2>
+    <p>The roadmap for upcoming releases. Tick them off as they ship.</p>
+    <div class="hud"><span id="futProg">0 / 0 ADVENTURES</span></div>
+    <div class="progress"><span id="futBar"></span></div>
+    <div id="futList"></div>
+    <h3>Add a new adventure</h3>
+    <div class="row"><input type="text" id="futInput" placeholder="e.g. learn to cook something together" maxlength="90"><button class="btn primary" id="futAdd">Add</button></div>
+    <p class="small">Some updates may require hugs, travel and shared snacks.</p>
+  </div></section>
+
+  <!-- TRIVIA -->
+  <section class="window" id="win-trivia"><div class="window-body" id="triviaBody"></div></section>
+
+  <!-- WEATHER -->
+  <section class="window" id="win-weather"><div class="window-body" id="weatherBody"></div></section>
+
+  <!-- GAMES -->
+  <section class="window" id="win-games"><div class="window-body">
+    <div class="arcade-head"><strong>ATULYA ARCADE</strong><div style="font-size:17px;margin-top:6px">PLAYER 1: ATULYA · CASUAL MODE · LIVES: UNLIMITED (EMOTIONALLY)</div><div style="font-size:16px;color:#d9c7f5;margin-top:3px">Defeat THE DISTANCE to unlock Emergency.exe.</div></div>
+    <div class="hud"><span id="arcProg">FINAL BOSS: NOT DEFEATED</span><span id="arcScore">SCORE: 0</span></div>
+    <h3 style="margin-top:12px">FINAL BOSS: THE DISTANCE</h3>
+    <div>
+      <p>THE DISTANCE has stolen your memories. Catch <b>7 falling memory stars</b> before time runs out. Dodge the gloomy clouds — each one costs a heart.</p>
+      <div class="hud"><span>STARS <b id="bossStars">0 / 7</b></span><span>LIVES <b id="bossLives">♥♥♥</b></span><span>TIME <b id="bossTime">45</b>s</span></div>
+      <canvas id="bossCanvas" width="560" height="260" aria-label="Final Boss game area"></canvas>
+      <div class="hud"><span id="bossStatus">Press START when ready.</span><span>← → / A D · or drag</span></div>
+      <div class="boss-ctl"><button class="btn hold" data-dir="-1" aria-label="Move left">◀</button><button class="btn primary" id="bossStart">▶ START</button><button class="btn hold" data-dir="1" aria-label="Move right">▶</button></div>
+    </div>
+    <div class="unlock-banner" id="arcReward"></div>
+  </div></section>
+
+  <!-- ACHIEVEMENTS -->
+  <section class="window" id="win-achievements"><div class="window-body">
+    <h2>Trophy cabinet</h2>
+    <div class="hud"><span id="achCount"></span><span id="achScore"></span></div>
+    <div class="progress"><span id="achBar"></span></div>
+    <div class="ach-grid" id="achList"></div>
+  </div></section>
+
+  <!-- EMERGENCY -->
+  <section class="window" id="win-emergency"><div class="window-body">
+    <div id="emLocked" class="locked-screen">
+      <div class="big">🔒</div>
+      <h2>EMERGENCY.EXE IS LOCKED</h2>
+      <p>This file is guarded by the Final Boss.<br>Defeat THE DISTANCE in Games.exe to open it.</p>
+      <div><ul class="quest" id="emQuest"></ul></div>
+      <button class="btn primary" data-open="games">🕹️ Open Games.exe</button>
+    </div>
+    <div id="emContent" class="hidden">
+      <h2>Okay. Jokes aside.</h2>
+      <p id="emIntro"></p>
+      <h3>Step 1 · Make a wish</h3>
+      <div class="cake-scene">
+        <div class="candles" id="candles"></div>
+        <div class="cake"><div class="tier t2"></div><div class="tier t1"></div><div class="plate"></div></div>
+        <div id="cakeMsg" class="px">MAKE A WISH, THEN TAP EACH CANDLE</div>
+      </div>
+      <div id="emRest" class="hidden">
+        <h3>Step 2 · A letter, from me to you</h3>
+        <div id="emLetter"><button class="btn big primary" id="openLetter">💌 Open the letter</button></div>
+        <div id="emEnd" class="end-card hidden">
+          <div class="px">♥ HAPPY BIRTHDAY, ATULYA ♥</div>
+          <button class="btn" id="rollCredits">🎬 Roll credits</button><button class="btn" id="rereadLetter">↻ Read again</button>
+        </div>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- TERMINAL -->
+  <section class="window" id="win-terminal"><div class="window-body" style="padding:8px">
+    <div class="term" id="term"><div id="termOut"></div><div class="term-line"><span>C:\ATULYA&gt;</span><input id="termIn" autocomplete="off" spellcheck="false" aria-label="Terminal input"></div></div>
+  </div></section>
+
+  <!-- CONTROL PANEL -->
+  <section class="window" id="win-control"><div class="window-body">
+    <h2>Control Panel</h2>
+    <h3>Wallpaper</h3><div class="walls" id="walls"></div>
+    <h3>System</h3>
+    <label class="tg"><input type="checkbox" id="setSound"> Sound effects &amp; music</label>
+    <label class="tg"><input type="checkbox" id="setNotes"> Random system notifications</label>
+    <label class="tg"><input type="checkbox" id="setSaver"> Screensaver after 90 seconds idle</label>
+    <h3>About this computer</h3>
+    <div class="panel">
+      <p><b>Operating system:</b> ATULYA OS 2.0 · Birthday Edition</p>
+      <p><b>Registered to:</b> Atulya</p>
+      <p><b>Product key:</b> ATU-LYA-1S-TH3-B3ST</p>
+      <p><b>Warranty:</b> Lifetime. Non-transferable.</p>
+    </div>
+    <h3>Maintenance</h3>
+    <button class="btn" id="resetAll">⚠ Reset all progress</button>
+    <div id="devPanel" class="hidden panel">
+      <b>DEVELOPER TOOLS</b> <span class="small">(visible because the URL contains ?dev)</span><br>
+      <button class="btn" id="devWin">Defeat Final Boss</button><button class="btn" id="devBsod">Trigger BSOD</button><button class="btn" id="devSaver">Screensaver</button><button class="btn" id="devBoot">Replay boot</button><button class="btn" id="devCredits">Credits</button>
+    </div>
+  </div></section>
+
+  <!-- RECYCLE BIN -->
+  <section class="window" id="win-recycle"><div class="window-body">
+    <div class="row" style="justify-content:space-between"><h2 style="margin:0">Recycle Bin</h2><button class="btn" id="emptyBin">🗑️ Empty Recycle Bin</button></div>
+    <div id="binList" style="margin-top:10px"></div>
+    <p id="binMsg" class="small"></p>
+  </div></section>
+</div>
+
+<!-- ================= SHELL ================= -->
+<div id="startMenu" class="hidden"></div>
+<div id="taskbar">
+  <button class="btn" id="startBtn">✦ START</button>
+  <div id="tasks"></div>
+  <div class="tray">
+    <button id="trSound" title="Toggle sound">🔊</button>
+    <button data-open="achievements" title="Achievements">🏆<span id="trAch">0</span></button>
+    <span id="clock">--:--</span>
+  </div>
+</div>
+<div id="toasts" aria-live="polite"></div>
+<div id="lightbox" class="overlay hidden"></div>
+<div id="dialog" class="overlay hidden"></div>
+<div id="celebrate" class="overlay hidden"></div>
+<div id="credits" class="overlay hidden"></div>
+<div id="bsod" class="hidden"></div>
+<canvas id="saver" class="hidden"></canvas>
+<canvas id="fx"></canvas>
+
+<script>
+'use strict';
+/* =====================================================================
+   CONTENT — every piece of text, photo, video and audio lives here.
+   PHASE 2: replace the sample content below with the real thing.
+   - Mixtape tracks: set `src` to a file path
+     (e.g. "media/photo1.jpg") and the placeholder card is replaced.
+   - Anything with src:null shows a designed placeholder instead.
+   ===================================================================== */
+const CONTENT = {
+  her: "Atulya",
+  him: "Tojo",
+
+  bootLines: [
+    "ATULYA BIOS v2.0.1110   (C) Department of Birthdays",
+    "",
+    "CPU  : HeartCore i∞ @ 4.20 GHz ................ OK",
+    "RAM  : 640K memories .......................... not nearly enough",
+    "GPU  : Unfairly Pretty Graphics Adapter ....... OK",
+    "DISK : 1 TB of chat screenshots ............... OK",
+    "NET  : Long-distance link .................... CONNECTED (laggy)",
+    "",
+    "Detecting favourite person .................... FOUND",
+    "Loading feelings.sys .......................... OK",
+    "Loading humour.dll ............................ OK (questionable)",
+    "Checking distance ............................. too much — ignoring",
+    "Mounting birthday_update.pkg .................. OK",
+    "",
+    "All systems ready. Starting ATULYA OS 2.0 ..."
+  ],
+  loadingMessages: ["Warming up the pixels…","Inflating balloons…","Hiding the cake…","Reticulating feelings…","Wrapping the presents…","Almost there…"],
+  loginHint: "Hint: there is no wrong password. There never was.",
+  loginReplies: ["Password accepted. Obviously.","Correct. Every password is correct when it's you.","Access granted. Welcome home, Player One."],
+  welcome: "Welcome back, Atulya. Your birthday update has been installed successfully.",
+  stickyNote: "Grocery list:\n1) 10 hajmolas\n2) 18 lays\n3) 15 kit kats\n4) 1 braided cable (pls buy atul)\n5) 1 magsafe power bank (also pls buy atul)",
+  /* The OS clock is frozen at the start of her birthday, everywhere it appears. */
+  osTime: {date:"Tuesday, 10 November", short:"10 Nov", time:"12:00 AM"},
+
+  notifications: [
+    "Atulya has used 98% of Tojo's available brain storage. Freeing up space is not an option.",
+    "A smile has been detected nearby. Cause: probably you.",
+    "Update available: more hugs required. Restart recommended.",
+    "Reminder: you are someone's favourite human. This notification cannot be dismissed (emotionally).",
+    "Boyfriend.exe is running in the background. It is always running.",
+    "Low battery: hugs at 3%. Please schedule a visit.",
+    "Your daily cuteness quota has been exceeded. Again.",
+    "Tojo.exe has sent you 1 (one) thinking-of-you. Delivered instantly, despite the distance.",
+    "Psst. Games.exe is hiding something."
+  ],
+
+  profile: {
+    name: "Atulya",
+    cls: "Legendary Birthday Girl",
+    level: "LV. ★★",
+    avatar: "👩🏻",
+    avatarSrc: "atul avatar.png",
+    tagline: "One of one. Cannot be replaced, duplicated or downloaded.",
+    stats: [["Kindness",99],["Humour",96],["Chaos",88],["Cuteness",100],["Snack detection",94],["Patience with Tojo",22]],
+    specs: [
+      ["Processor","Extremely fast at detecting nonsense"],
+      ["Graphics","Unfairly pretty. Ray tracing not required."],
+      ["Memory","Forgets important documents all the time. Remembers every Taylor Swift and Olivia Rodrigo lyric ever written."],
+      ["Operating system","Birthday Special Edition, operating on Hajmola"]
+    ],
+    equipment: [
+      ["Weapon","Nap time > 0.5 minutes","⚔️"],
+      ["Armour","Pink nightsuit and Tojo's sweatshirt","🧥"],
+      ["Accessory","Phone at 4% battery","📱"],
+      ["Special move","Her square-up can defeat anyone","✨"]
+    ]
+  },
+
+  mailAddress: "atulissocool@atulmail.com",
+  inbox: [
+    {from:"Department of Birthdays",subject:"Your annual upgrade is ready 🎉",date:"10 Nov, 12:00 AM",body:"Dear Atulya,\n\nWe are pleased to inform you that you have successfully completed another full orbit around the sun.\n\nYour upgrade includes:\n  + 1 wisdom\n  + 1 age (do not worry about this)\n  + unlimited birthday privileges for the next 24 hours\n\nThis upgrade cannot be declined.\n\nWarm regards,\nThe Department of Birthdays"},
+    {from:"Tojo",subject:"Re: Re: Re: Re: did you eat",date:"10 Nov, 12:00 AM",body:"did you eat\n\n> yes\n>> what did you eat\n>>> food\n>>>> what kind of food\n\nAnyway. Happy birthday. I'm asking because I care. Also because I'm hungry."},
+    {from:"Cake Delivery Service",subject:"Delivery delayed: distance too large",date:"10 Nov, 12:00 AM",body:"We attempted to deliver 1 (one) birthday cake to your location.\n\nUnfortunately our courier was defeated by THE DISTANCE. A digital replacement has been installed inside Emergency.exe.\n\nThe cake is virtual. The candles are real enough.\n\nWe apologise for any inconvenience."},
+    {from:"THE DISTANCE",subject:"You will never beat me",date:"10 Nov, 12:00 AM",body:"Mwahahaha.\n\nI have stolen your memories and scattered them across the sky. You will never collect them all.\n\nUnless you open Games.exe and catch them. Which you should NOT do. Please don't.\n\n— The Distance (Final Boss)"},
+    {from:"Future You",subject:"It was worth it",date:"Some years from now",body:"Hey you.\n\nNo spoilers, but: the waiting, the trains and flights, the goodnight calls that turned into good-morning calls — it was all worth it.\n\nEat cake. Laugh loudly. Let yourself be celebrated today.\n\n— You, later"},
+    {from:"Tojo",subject:"Open this one last",date:"10 Nov, 12:00 AM",locked:true,body:"If you're reading this, you beat the Final Boss. I'm extremely proud and only slightly surprised.\n\nEmergency.exe is open now. Go on. I'll wait.\n\n— T"}
+  ],
+
+  /* MIXTAPE — to use a real song, put the MP3 in a "music" folder next to this
+     HTML file and set src, e.g. src:"music/our-song.mp3". Tracks with src:null
+     play the built-in chiptune instead (notes/bass/bpm are ignored for MP3s). */
+  tracks: [
+    {title:"Happy Birthday",artist:"A song just for you",src:"music/hbd song.ogg"},
+    {title:"drop dead",artist:"Olivia Rodrigo",src:"music/Olivia Rodrigo - drop dead (Official Music Video).mp3"},
+    {title:"take me home (4 christmas)",artist:"Olivia Rodrigo",src:"music/Olivia Rodrigo - take me home (4 christmas) (Official Music Video) [4K Remaster].mp3"},
+    {title:"Lavender Lemonade",artist:"Wangden Sherpa",src:"music/Wangden Sherpa - Lavender Lemonade [Official Lyric Video].mp3"}
+  ],
+  birthdaySong: 0,   /* plays once when she blows out the candles */
+  creditsSong: 3,    /* plays during the end credits */
+
+  bugs: [
+    {status:"CRITICAL",title:"Excessive cuteness",text:"Subject continues to be adorable despite repeated requests to stop. No fix available."},
+    {status:"UNRESOLVED",title:"Missing-you loop",text:"When subject is away, boyfriend.exe repeatedly opens the chat window. Battery usage unusually high."},
+    {status:"WONTFIX",title:"Favourite person syndrome",text:"Subject has become the default answer to every question involving favourite people. This is considered a feature."}
+  ],
+  bugReplies: ["Investigated. Conclusion: still adorable.","Reproduced 14 times. Each time, more charming. Closing as FEATURE.","Escalated to management. Management (Tojo) found it cute.","Patch attempted. Patch failed. Patch fell in love.","Cannot reproduce. Subject is perfect."],
+  bugStatuses: ["WONTFIX","FEATURE","CRITICAL","UNDER REVIEW"],
+
+  loveStatuses: ["Scanning heartbeat…","Measuring smile radius…","Consulting the stars…","Converting kilometres into hugs…","Result too large. Recalculating…"],
+
+  future: [
+    "Go to all the crazy food places Atul has saved",
+    "Decorate our house together",
+    "Go on a road trip together",
+    "See the Eiffel Tower sparkle",
+    "Kiss under the Northern Lights",
+    "Stay up a whole night together (might be the toughest one on the list)"
+  ],
+
+  trivia: [
+    {q:"Who said 'I love you' first?",o:["Tojo","Atulya","Both at the exact same time","Lawyers are still investigating"],a:[0],note:"Tojo would like this recorded in the official history."},
+    {q:"What was our first meal together?",o:["Pizza","Wai Wai","Momos","Biryani"],a:[1],note:"Wai Wai. A meal of legends."},
+    {q:"Who falls asleep the most?",o:["Atulya","Tojo","The Wi-Fi","Both, simultaneously"],a:[0],note:"Mid-sentence. Every time. Nap time > 0.5 minutes."},
+    {q:"What is Tojo's favourite food?",o:["Pizza","Noodles at 2am","Cake","Atulya"],a:[3],note:"Correct. Moving on very quickly."},
+    {q:"How many time zones apart are we?",o:["Zero — same clock, different cities","Too many","Exactly 4.5","Three and a half"],a:[0],note:"Same time zone, at least. The kilometres are another matter."},
+    {q:"Who is right in most arguments?",o:["Atulya","Atulya","Atulya","Tojo"],a:[0,1,2],note:"This question was written under supervision."},
+    {q:"What will we do together next time we meet?",o:["Eat the yummiest food","Sleep all day","Watch a movie","Go shopping"],a:[0],note:"Obviously. The food list is very long."},
+    {q:"What is the best song for a road trip?",o:["Something loud","Something sad (for drama)","Whatever you pick","Silence, so we can talk"],a:[2],note:"DJ privileges are permanently yours."}
+  ],
+  triviaRanks: [[8,"LORE MASTER — you know us better than the Wi-Fi does."],[6,"SENIOR HISTORIAN — minor gaps, major love."],[3,"CASUAL FAN — suspicious, but forgiven."],[0,"NEW PLAYER — did someone else take this quiz?"]],
+
+  weather: {
+    now:{icon:"🌤️",temp:"24°",desc:"Mostly sunny, with scattered thoughts of you"},
+    forecast:[["MON","☁️","Cloudy with a 90% chance of missing you"],["TUE","🌧️","Light drizzle of 4-hour naps"],["WED","⛈️","Thunderstorm of memes"],["THU","🧺","An unexpected BigBasket order"],["FRI","☀️","Clear skies. Perfect hugging conditions."]],
+    zones:[{label:"Atulya's time"},{label:"Tojo's time"}],
+    distance:"About 1,170 km — Pune ↔ Delhi, as the crow flies (~1,450 km by road)"
+  },
+
+  compliments: ["You make ordinary days feel like main-quest content.","Your laugh should be classified as a renewable energy source.","You are the reason my screen time is so high, and I regret nothing.","Statistically, you are the best person in this operating system.","You're the kind of person people write entire operating systems for."],
+  fortunes: ["A wonderful year is loading. Do not turn off your device.","You will receive at least one very long hug in the near future.","Someone far away is thinking about you right now. (It's Tojo.)","Your lucky number today is the number of candles on your cake.","The distance is temporary. The memes are forever."],
+
+  recycle: [
+    ["📄","plans_without_atulya.docx","0 KB","Never existed. Deleted anyway, to be safe."],
+    ["⚙️","my_chill.exe","12 MB","Corrupted the day we met."],
+    ["🖼️","boring_birthday_card.jpg","88 KB","Replaced by an entire operating system."],
+    ["🧩","pune_delhi_distance.dll","1,170 KB","Tried to delete it. It keeps coming back."],
+    ["📝","argument_i_won.txt","1 KB","File not found. Possibly never happened."],
+    ["🔊","goodbye.wav","—","Too short. Didn't like it."]
+  ],
+
+  shutdownLines: ["Nope.","Not today.","Absolutely not.","Try 'Stay' instead?","The shutdown button has resigned."],
+
+  emergencyIntro: "You made it. This is the part of the operating system I couldn't make funny, even when I tried. So, no jokes for a minute — just a cake and a letter.",
+  candles: 5,
+  letter: "Hi my love,\nHAPPPY HAPPY HAPPY HAPPY HAPPY BDAY TO UUUUUUUUU!!!!!!!!!!!\nHappy birthday my love, im really sorry I couldn't be there and I regret it deeply, so I made this for u to make ur day a lil better and to show how grateful I am for you and to have you in my life. \n\nI hope u liked atul os, while making it i couldn't stop smiling because of all the little things that made my heart warm that I have added to atul.os. \n\nIm really grateful that youve kept me in your life to celebrate not one, not two, but 3 birthdays now. \nI love how each birthday of yours shows which phase we were in, where in the start i made the bulb wala \"you light up my world\", and it showed how new and eager we were about each other (we still are)\nThen, came when i had to hide and sneak from my mom and buy your gifts, and it was a whole adventure i did with heshan for your birthday, and the start map i made. It was a tough time we went through, but we made it baby, 2 years later, still here.\n\nThen, came last birthday, where i made the comic book and we had a mini date in pavilion, it just shows the phases we have been through and theyre like milestones for our relationship. \nI love you sososososososo much jaan, and i hope this birthday, and all the other birthdays that follow, be as beautiful as you are (that probably not possible because youre so gorgeous). \n\nHappy birthday my lil sunflower 🌻, \nwith love, \nAnushka",
+  signoff: "",   /* the letter already ends with its own sign-off */
+  credits: [["h","ATULYA OS 2.0"],["",""],["h","DIRECTED BY"],["","Tojo"],["",""],["h","STARRING"],["","Atulya (as herself)"],["",""],["h","SPECIAL GUEST VILLAIN"],["","The Distance"],["",""],["h","SOUND DESIGN"],["","A very confused synthesizer"],["",""],["h","QA TESTING"],["","Tojo, at 3am"],["",""],["h","CATERING"],["","One virtual cake"],["",""],["h","NO DISTANCES WERE HARMED"],["h","IN THE MAKING OF THIS OS"],["","(they were defeated)"],["",""],["h","THANK YOU FOR PLAYING"],["",""],["","♥"],["",""],["","HAPPY BIRTHDAY"]]
+};
+
+/* ============================ APPS & ACHIEVEMENTS ============================ */
+const APPS = [
+  {id:"readme",name:"ReadMe.txt",title:"ReadMe.txt — Notepad",icon:"📄",w:540,g:"START HERE"},
+  {id:"about",name:"Atulya.exe",title:"Atulya.exe — Character Sheet",icon:"👾",w:600,g:"PROGRAMS"},
+    {id:"inbox",name:"Inbox",title:"Inbox — atulissocool@atulmail.com",icon:"📬",w:700,g:"PROGRAMS"},
+  {id:"music",name:"Mixtape.exe",title:"Mixtape.exe — Media Player",icon:"📻",w:500,g:"PROGRAMS"},
+  {id:"love",name:"Love.exe",title:"Love.exe — Scientific Calculator",icon:"🧮",w:520,g:"PROGRAMS"},
+  {id:"bugs",name:"Bug Reports",title:"Bug Reports — Known Issues",icon:"🐛",w:560,g:"PROGRAMS"},
+  {id:"future",name:"Future.exe",title:"Future.exe — Upcoming Adventures",icon:"🚀",w:540,g:"PROGRAMS"},
+  {id:"trivia",name:"Lore Quiz",title:"Lore Quiz — How well do you know us?",icon:"📜",w:540,g:"PROGRAMS"},
+  {id:"weather",name:"Weather.exe",title:"Weather.exe — Long-Distance Forecast",icon:"⛅",w:520,g:"PROGRAMS"},
+  {id:"games",name:"Games.exe",title:"Games.exe — ATULYA ARCADE",icon:"🕹️",w:620,g:"GAMES"},
+  {id:"achievements",name:"Trophies",title:"Trophies — Achievements",icon:"🏆",w:560,g:"GAMES"},
+  {id:"emergency",name:"Emergency.exe",title:"Emergency.exe — For the Most Special Birthday Girl in the World",icon:"📼",w:680,g:"GAMES"},
+  {id:"terminal",name:"Terminal",title:"Terminal — C:\\ATULYA",icon:"💻",w:620,g:"SYSTEM"},
+  {id:"control",name:"Control Panel",title:"Control Panel",icon:"⚙️",w:540,g:"SYSTEM"},
+  {id:"recycle",name:"Recycle Bin",title:"Recycle Bin",icon:"🗑️",w:540,g:"SYSTEM"}
+];
+const APP = Object.fromEntries(APPS.map(a=>[a.id,a]));
+
+const ACH = {
+  login:{t:"Hello World",d:"Logged in to ATULYA OS.",i:"🔑"},
+  explorer:{t:"Explorer",d:"Opened 5 different apps.",i:"🧭"},
+  completionist:{t:"Nosy (Affectionately)",d:"Opened every single app.",i:"🗂️"},
+  levelup:{t:"Level Up!",d:"Claimed this year's level-up.",i:"⬆️"},
+  bug:{t:"QA Department",d:"Filed a bug report.",i:"🐛"},
+  love:{t:"Mathematically Proven",d:"Ran Love.exe.",i:"🧮"},
+  trivia:{t:"Lore Master",d:"Got every quiz question right.",i:"📜"},
+  dj:{t:"Mixtape Enjoyer",d:"Played a track in Mixtape.exe.",i:"🎵"},
+  inbox:{t:"Inbox Zero",d:"Read every email.",i:"📬"},
+  boss:{t:"Distance Defeated",d:"Beat the Final Boss.",i:"⭐"},
+  shutdown:{t:"Nice Try",d:"Attempted to shut down.",i:"⏻"},
+  hacker:{t:"1337 H4X0R",d:"Used the terminal.",i:"💻"},
+  bsod:{t:"Survived the Blue Screen",d:"Crashed the OS with feelings.",i:"💙"},
+  candles:{t:"Wish Granted",d:"Blew out every candle.",i:"🎂"},
+  letter:{t:"Read Until the End",d:"Read the letter.",i:"💌"},
+  credits:{t:"Stayed for the Credits",d:"Watched the end credits.",i:"🎬"},
+  konami:{t:"Old School",d:"Entered a very famous cheat code.",i:"🎮"},
+  screensaver:{t:"AFK",d:"Let the screensaver kick in.",i:"💤"},
+  trash:{t:"Dumpster Diver",d:"Tried to restore something from the bin.",i:"🗑️"}
+};
+
+/* ============================ UTILITIES ============================ */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const el=(tag,cls,html)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const rand=(a,b)=>a+Math.random()*(b-a);
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const fmtTime=s=>{s=Math.max(0,Math.floor(s));return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")};
+const PARAMS=new URLSearchParams(location.search);
+const HEART_MAP=[".11.11.","1111111","1111111",".11111.","..111..","...1..."];
+const STAR_MAP=["...1...","..121..","1122211",".12221.","..121..",".1...1."];
+function drawMap(ctx,map,x,y,s,pal){for(let r=0;r<map.length;r++)for(let c=0;c<map[r].length;c++){const k=map[r][c];if(k!=="."){ctx.fillStyle=pal[k];ctx.fillRect(Math.round(x+c*s),Math.round(y+r*s),s,s)}}}
+
+/* ============================ STATE ============================ */
+const SAVE_KEY="atulyaOS2";
+const freshState=()=>({ach:{},games:{sim:false,match:false,boss:false},score:0,future:{},customFuture:[],opened:{},read:{},bugs:[],candles:false,visits:0,settings:{wall:"nebula",sound:true,notes:true,saver:true}});
+function loadState(){
+  const d=freshState();
+  try{const r=JSON.parse(localStorage.getItem(SAVE_KEY));if(r&&typeof r==="object"){return Object.assign(d,r,{settings:Object.assign(d.settings,r.settings||{}),games:Object.assign(d.games,r.games||{})})}}catch(e){}
+  return d;
+}
+let S=loadState();
+function save(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(S))}catch(e){}}
+
+/* ============================ SOUND ============================ */
+let AC=null;
+function ac(){if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)()}catch(e){return null}}if(AC.state==="suspended")AC.resume();return AC}
+function tone(f,dur,type="square",vol=.04,when=0,dest){const a=ac();if(!a)return;const t=a.currentTime+when;const o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.setValueAtTime(f,t);g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g).connect(dest||a.destination);o.start(t);o.stop(t+dur+.03)}
+const SFX={
+  click:()=>tone(660,.04,"square",.025),
+  open:()=>{tone(523,.06,"square",.03);tone(784,.08,"square",.03,.05)},
+  close:()=>{tone(784,.05,"square",.03);tone(523,.07,"square",.03,.05)},
+  notify:()=>{tone(880,.08,"triangle",.06);tone(1175,.14,"triangle",.06,.09)},
+  ach:()=>[523,659,784,1047].forEach((f,i)=>tone(f,.14,"square",.045,i*.08)),
+  error:()=>{tone(196,.22,"sawtooth",.05);tone(147,.3,"sawtooth",.05,.18)},
+  start:()=>[392,523,659,784,1047].forEach((f,i)=>tone(f,.3,"triangle",.07,i*.12)),
+  coin:()=>{tone(988,.05,"square",.04);tone(1319,.12,"square",.04,.05)},
+  hit:()=>tone(130,.2,"sawtooth",.06),
+  blow:()=>{tone(420,.12,"triangle",.04);tone(300,.18,"triangle",.03,.06)},
+  win:()=>[523,659,784,1047,784,1047,1319].forEach((f,i)=>tone(f,.18,"square",.045,i*.11))
+};
+function sfx(n){if(S.settings.sound&&SFX[n])SFX[n]()}
+
+/* ============================ NOTIFICATIONS ============================ */
+function notify(text,o={}){
+  const t=el("div","toast"+(o.cls?" "+o.cls:""),`<span class="ti">${o.icon||"💬"}</span><div><b>${esc(o.title||"ATULYA OS NOTIFICATION")}</b>${esc(text)}</div>`);
+  t.onclick=()=>t.remove();
+  const box=$("#toasts");box.appendChild(t);
+  while(box.children.length>3)box.firstChild.remove();
+  if(!o.silent)sfx(o.cls==="ach"?"ach":"notify");
+  setTimeout(()=>{t.classList.add("out");setTimeout(()=>t.remove(),300)},o.ms||5200);
+}
+function unlock(id){
+  if(S.ach[id]||!ACH[id])return;
+  S.ach[id]=Date.now();save();
+  const a=ACH[id];notify(a.d,{title:"ACHIEVEMENT UNLOCKED · "+a.t,icon:a.i,cls:"ach"});
+  renderAch();
+}
+
+/* ============================ WINDOW MANAGER ============================ */
+const WM={z:20,count:0,order:[]};
+const isMobile=()=>matchMedia("(max-width:700px)").matches;
+function initWindows(){
+  APPS.forEach(app=>{
+    const w=$("#win-"+app.id);if(!w)return;
+    w.dataset.app=app.id;
+    const tb=el("div","titlebar",`<span class="ti">${app.icon}</span><span class="t">${esc(app.title)}</span><span class="wc"><button data-a="min" aria-label="Minimise">_</button><button data-a="max" aria-label="Maximise">□</button><button data-a="close" aria-label="Close">×</button></span>`);
+    w.prepend(tb);
+    tb.querySelector('[data-a=min]').onclick=()=>minimize(w);
+    tb.querySelector('[data-a=max]').onclick=()=>toggleMax(w);
+    tb.querySelector('[data-a=close]').onclick=()=>closeWin(w);
+    tb.addEventListener("dblclick",e=>{if(!e.target.closest("button"))toggleMax(w)});
+    w.addEventListener("pointerdown",()=>{if(!w.classList.contains("active"))focusWin(w)});
+    makeDraggable(tb,w);
+  });
+}
+function makeDraggable(tb,w){
+  let sx,sy,ox,oy,on=false;
+  tb.addEventListener("pointerdown",e=>{
+    if(e.target.closest("button")||w.classList.contains("max")||isMobile())return;
+    on=true;sx=e.clientX;sy=e.clientY;ox=w.offsetLeft;oy=w.offsetTop;tb.setPointerCapture(e.pointerId);e.preventDefault();
+  });
+  tb.addEventListener("pointermove",e=>{
+    if(!on)return;const D=$("#desktop");
+    w.style.left=clamp(ox+e.clientX-sx,-w.offsetWidth+90,D.clientWidth-90)+"px";
+    w.style.top=clamp(oy+e.clientY-sy,0,D.clientHeight-32)+"px";
+  });
+  const end=()=>{if(on){on=false;fitHeight(w)}};
+  tb.addEventListener("pointerup",end);tb.addEventListener("pointercancel",end);
+}
+function fitHeight(w){if(!w.style.height)w.style.maxHeight=Math.max(240,$("#desktop").clientHeight-w.offsetTop-8)+"px"}
+function placeWin(w,app){
+  const D=$("#desktop"),dw=D.clientWidth,dh=D.clientHeight;
+  const width=Math.min(app.w,dw-16);w.style.width=width+"px";
+  const n=(WM.count++)%7;
+  w.style.left=clamp(Math.round((dw-width)/2+(n-3)*28),8,Math.max(8,dw-width-8))+"px";
+  w.style.top=clamp(18+n*24,6,Math.max(6,dh-280))+"px";
+  fitHeight(w);w.dataset.placed="1";
+}
+function openApp(id){
+  const app=APP[id],w=$("#win-"+id);if(!app||!w)return;
+  closeStart();
+  if(!S.opened[id]){S.opened[id]=1;save();const n=Object.keys(S.opened).length;if(n>=5)unlock("explorer");if(APPS.every(a=>S.opened[a.id]))unlock("completionist")}
+  if(!w.classList.contains("open")){
+    if(!w.dataset.placed)placeWin(w,app);
+    w.classList.add("open");sfx("open");
+    WM.order.push(id);
+    if(app.onOpen)app.onOpen();
+  }
+  w.classList.remove("minimized");
+  focusWin(w);
+}
+function focusWin(w){$$(".window.active").forEach(x=>x.classList.remove("active"));w.classList.add("active");w.style.zIndex=++WM.z;renderTasks()}
+function focusTop(){const vis=$$(".window.open:not(.minimized)").sort((a,b)=>(+b.style.zIndex||0)-(+a.style.zIndex||0));if(vis[0])focusWin(vis[0]);else renderTasks()}
+function minimize(w){w.classList.add("minimized");w.classList.remove("active");sfx("click");focusTop()}
+function toggleMax(w){if(isMobile())return;w.classList.toggle("max");sfx("click")}
+function closeWin(w){
+  if(!w.classList.contains("open"))return;
+  w.classList.remove("open","minimized","active","max");
+  WM.order=WM.order.filter(x=>x!==w.dataset.app);
+  const app=APP[w.dataset.app];if(app.onClose)app.onClose();
+  sfx("close");focusTop();
+}
+function renderTasks(){
+  const box=$("#tasks");box.innerHTML="";
+  WM.order.forEach(id=>{
+    const w=$("#win-"+id),app=APP[id];
+    const active=w.classList.contains("active")&&!w.classList.contains("minimized");
+    const b=el("button","task-btn"+(active?" active":""),`<span>${app.icon}</span><span class="tn">${esc(app.name)}</span>`);
+    b.title=app.name;
+    b.onclick=()=>{if(active)minimize(w);else{w.classList.remove("minimized");focusWin(w)}};
+    box.appendChild(b);
+  });
+}
+function closeAll(){$$(".window.open").forEach(w=>closeWin(w))}
+
+/* ============================ DESKTOP / START ============================ */
+function buildDesktop(){
+  $("#icons").innerHTML=APPS.map(a=>`<button class="app-icon" data-open="${a.id}" id="icon-${a.id}"><span class="icon-art">${a.icon}${a.id==="emergency"?'<i class="lock">🔒</i>':""}</span><span class="label">${esc(a.name)}</span></button>`).join("");
+  let h=`<div class="sm-side px">ATULYA <b>OS 2.0</b></div><div class="sm-main"><div class="sm-user"><span class="sm-av">${CONTENT.profile.avatarSrc?`<img src="${esc(encodeURI(CONTENT.profile.avatarSrc))}" alt="">`:CONTENT.profile.avatar}</span><b>${esc(CONTENT.her)}</b></div>`;
+  [...new Set(APPS.map(a=>a.g))].forEach(g=>{h+=`<div class="sm-g">${g}</div>`+APPS.filter(a=>a.g===g).map(a=>`<button data-open="${a.id}"><span>${a.icon}</span>${esc(a.name)}</button>`).join("")});
+  h+=`<div class="sm-sep"></div><button id="smShutdown"><span>⏻</span>Shut down…</button></div>`;
+  $("#startMenu").innerHTML=h;
+  $("#smShutdown").onclick=shutdownDialog;
+  $("#stickyText").textContent=CONTENT.stickyNote;$("#brandDate").textContent=(CONTENT.osTime.date+" · "+CONTENT.osTime.time).toUpperCase();
+}
+function closeStart(){$("#startMenu").classList.add("hidden");$("#startBtn").classList.remove("on")}
+$("#startBtn").addEventListener("click",e=>{e.stopPropagation();const m=$("#startMenu");m.classList.toggle("hidden");$("#startBtn").classList.toggle("on",!m.classList.contains("hidden"));sfx("click")});
+document.addEventListener("click",e=>{
+  const o=e.target.closest("[data-open]");
+  if(o){e.preventDefault();openApp(o.dataset.open);return}
+  if(!e.target.closest("#startMenu"))closeStart();
+});
+
+function tick(){
+  $("#clock").textContent=CONTENT.osTime.short+" · "+CONTENT.osTime.time;
+  if($("#win-weather").classList.contains("open"))updateZones();
+}
+
+/* ============================ ABOUT ============================ */
+function buildAbout(){
+  const p=CONTENT.profile;
+  $("#aboutBody").innerHTML=`
+  <div class="sheet">
+    <div class="avatar">${p.avatarSrc?`<img src="${esc(encodeURI(p.avatarSrc))}" alt="">`:p.avatar}<div class="av-tag">PLAYER 1</div></div>
+    <div>
+      <h2>${esc(p.name)}</h2>
+      <div><span class="pill">${esc(p.cls)}</span><span class="pill">${esc(p.level)}</span><span class="pill">RARITY: LEGENDARY</span></div>
+      <p>${esc(p.tagline)}</p>
+      <div class="lvl"><span class="small">XP</span><div class="progress"><span style="width:100%"></span></div></div>
+      <button class="btn primary lvlup" id="lvlBtn">⬆ LEVEL UP AVAILABLE</button>
+    </div>
+  </div>
+  <h3>Stats</h3>
+  <div class="statbars">${p.stats.map(([k,v])=>`<div class="sb"><span>${esc(k)}</span><div class="progress"><span style="width:${Math.min(v,100)}%"></span></div><b>${v}${v>=100?"+":""}</b></div>`).join("")}</div>
+  <h3>System specifications</h3>
+  <div class="panel">${p.specs.map(([k,v])=>`<p><b>${esc(k)}:</b> ${esc(v)}</p>`).join("")}</div>
+  <h3>Equipment</h3>
+  <div class="equip">${p.equipment.map(([k,v,i])=>`<div class="slot"><span class="si">${i}</span><div><b>${esc(k)}</b><br>${esc(v)}</div></div>`).join("")}</div>`;
+  $("#lvlBtn").onclick=e=>{
+    const b=e.currentTarget;b.classList.remove("lvlup");b.textContent="✓ LEVEL UP CLAIMED";b.disabled=true;
+    confetti();sfx("win");notify(CONTENT.her+" levelled up! +1 wisdom, +1 charm, +∞ birthday privileges.",{icon:"⬆️",title:"LEVEL UP"});unlock("levelup");
+  };
+}
+
+/* ============================ FAVOURITES ============================ */
+/* ============================ MEMORY VAULT ============================ */
+let lbClose=null,lbKeys=null;
+function lightbox(title,html){
+  const lb=$("#lightbox");if(lbClose)lbClose();
+  lb.innerHTML=`<div class="dlg lb"><div class="titlebar"><span class="t">${esc(title)}</span><span class="wc"><button data-x aria-label="Close">×</button></span></div><div class="dlg-body" id="lbBody">${html}</div></div>`;
+  lb.classList.remove("hidden");
+  lb.querySelector("[data-x]").onclick=closeLightbox;
+  lb.onclick=e=>{if(e.target===lb)closeLightbox()};
+  return $("#lbBody");
+}
+function closeLightbox(){if(lbClose){lbClose();lbClose=null}lbKeys=null;$("#lightbox").classList.add("hidden");$("#lightbox").innerHTML=""}
+/* ============================ INBOX ============================ */
+let mailSel=-1;
+function mailAvailable(m){return !m.locked||allGames()}
+function renderMail(){
+  const list=$("#mailList");
+  list.innerHTML=CONTENT.inbox.map((m,i)=>{const av=mailAvailable(m);return `<button class="mail-item${S.read[i]?"":" unread"}${i===mailSel?" sel":""}" data-mail="${i}"><div class="mf"><span>${av?"":"🔒 "}${esc(m.from)}</span><span>${S.read[i]?"":"●"}</span></div><div class="ms">${esc(av?m.subject:"[Encrypted message]")}</div></button>`}).join("");
+  $$("[data-mail]",list).forEach(b=>b.onclick=()=>readMail(+b.dataset.mail));
+  const unread=CONTENT.inbox.filter((m,i)=>!S.read[i]&&mailAvailable(m)).length;
+  $("#mailStatus").textContent=CONTENT.inbox.length+" messages · "+unread+" unread";
+}
+function readMail(i){
+  const m=CONTENT.inbox[i];mailSel=i;sfx("click");
+  if(!mailAvailable(m)){$("#mailView").innerHTML=`<div class="center" style="padding:30px 10px"><div style="font-size:48px">🔒</div><h2>ENCRYPTED</h2><p>This message can only be decrypted by defeating the Final Boss.</p><button class="btn primary" data-open="games">Open Games.exe</button></div>`;renderMail();return}
+  S.read[i]=1;save();
+  $("#mailView").innerHTML=`<div class="mh"><b>From:</b> ${esc(m.from)}<br><b>To:</b> ${esc(CONTENT.mailAddress)}<br><b>Subject:</b> ${esc(m.subject)}<br><b>Date:</b> ${esc(m.date)}</div><div class="mbody">${esc(m.body)}</div>${m.locked?'<p><button class="btn primary" data-open="emergency">📼 Open Emergency.exe</button></p>':""}`;
+  renderMail();
+  if(CONTENT.inbox.every((x,j)=>S.read[j]))unlock("inbox");
+}
+
+/* ============================ MUSIC ============================ */
+const NOTE_IX={C:0,"C#":1,D:2,"D#":3,E:4,F:5,"F#":6,G:7,"G#":8,A:9,"A#":10,B:11};
+function nf(n){const m=/^([A-G]#?)(\d)$/.exec(n);if(!m)return 0;return 440*Math.pow(2,(NOTE_IX[m[1]]+(+m[2]+1)*12-69)/12)}
+const MU={idx:0,playing:false,timer:null,step:0,next:0,master:null,an:null,audio:null,vol:.6};
+function renderPlaylist(){
+  $("#mList").innerHTML=CONTENT.tracks.map((t,i)=>`<li class="${i===MU.idx&&MU.playing?"on":""}" data-tr="${i}"><span>${String(i+1).padStart(2,"0")} · ${esc(t.title)}</span><span>${MU.playing&&i===MU.idx?"♪":""}</span></li>`).join("");
+  $$("[data-tr]").forEach(li=>li.onclick=()=>playTrack(+li.dataset.tr));
+}
+function playTrack(i,once){
+  if(!S.settings.sound){notify("Sound is switched off. Tap the 🔇 in the taskbar to turn it on.",{icon:"🔇",silent:true});return}
+  stopMusic(true);
+  const n=CONTENT.tracks.length;MU.idx=(i+n)%n;const tr=CONTENT.tracks[MU.idx];
+  const a=ac();if(!a)return;
+  MU.master=a.createGain();MU.master.gain.value=MU.vol*.9;MU.an=a.createAnalyser();MU.an.fftSize=64;MU.master.connect(MU.an);MU.an.connect(a.destination);
+  MU.playing=true;
+  $("#mNow").textContent="♪ "+tr.title.toUpperCase();$("#mArtist").textContent=tr.artist;$("#mPlay").textContent="❚❚";
+  if(tr.src){
+    MU.audio=new Audio(encodeURI(tr.src));MU.audio.volume=MU.vol;MU.audio.play().catch(()=>{});
+    MU.audio.onended=()=>once?stopMusic():playTrack(MU.idx+1);
+    MU.audio.onerror=()=>notify("This device couldn't play \""+tr.title+"\". Try the next track.",{icon:"📻",silent:true});
+    MU.timer=setInterval(()=>{const au=MU.audio;if(!au)return;$("#mProg").style.width=(isFinite(au.duration)&&au.duration?au.currentTime/au.duration*100:0)+"%";$("#mTime").textContent=fmtTime(au.currentTime)+(isFinite(au.duration)?" / "+fmtTime(au.duration):"")},250);
+  }else{
+    const notes=tr.notes.split(/\s+/),bass=tr.bass.split(/\s+/),sd=60/tr.bpm/2;
+    MU.step=0;MU.next=a.currentTime+.06;
+    MU.timer=setInterval(()=>{
+      while(MU.next<a.currentTime+.15){
+        const st=MU.step,nt=notes[st%notes.length];
+        if(nt!=="-")tone(nf(nt),sd*.9,"square",.09,MU.next-a.currentTime,MU.master);
+        if(st%4===0)tone(nf(bass[Math.floor(st/8)%bass.length]),sd*3.6,"triangle",.22,MU.next-a.currentTime,MU.master);
+        if(st%2===1)tone(6000,.02,"square",.012,MU.next-a.currentTime,MU.master);
+        MU.next+=sd;MU.step++;
+      }
+      const len=notes.length*2;
+      $("#mProg").style.width=(MU.step%len/len*100)+"%";$("#mTime").textContent=fmtTime(MU.step%len*sd)+" / "+fmtTime(len*sd);
+      if(MU.step>=len)playTrack(MU.idx+1);
+    },25);
+  }
+  renderPlaylist();unlock("dj");viz();
+}
+function stopMusic(quiet){
+  clearInterval(MU.timer);MU.timer=null;
+  if(MU.audio){MU.audio.pause();MU.audio=null}
+  if(MU.master){try{MU.master.gain.setValueAtTime(0,ac().currentTime);MU.master.disconnect()}catch(e){}MU.master=null}
+  MU.playing=false;
+  if(!quiet){$("#mPlay").textContent="▶";$("#mProg").style.width="0";$("#mTime").textContent="0:00";$("#mNow").textContent="■ STOPPED";renderPlaylist()}
+}
+function viz(){
+  const c=$("#viz"),x=c.getContext("2d");x.clearRect(0,0,c.width,c.height);
+  if(!MU.playing)return;
+  const n=24,bw=c.width/n;let d=null;
+  if(MU.an&&!MU.audio){d=new Uint8Array(MU.an.frequencyBinCount);MU.an.getByteFrequencyData(d)}
+  for(let i=0;i<n;i++){const v=d?d[i%d.length]/255:Math.random()*.8;const h=Math.max(3,v*c.height);x.fillStyle=i%2?"#6fe38a":"#9dffb0";x.fillRect(i*bw+1,c.height-h,bw-3,h)}
+  requestAnimationFrame(viz);
+}
+function buildMusic(){
+  renderPlaylist();
+  $("#mPlay").onclick=()=>MU.playing?stopMusic():playTrack(MU.idx);
+  $("#mStop").onclick=()=>stopMusic();
+  $("#mNext").onclick=()=>playTrack(MU.idx+1);
+  $("#mPrev").onclick=()=>playTrack(MU.idx-1);
+  $("#mVol").oninput=e=>{MU.vol=e.target.value/100;if(MU.master)MU.master.gain.value=MU.vol*.9;if(MU.audio)MU.audio.volume=MU.vol};
+}
+
+/* ============================ LOVE ============================ */
+function buildLove(){
+  $("#loveGo").onclick=()=>{
+    const n=parseInt($("#loveN").value,10),A=$("#loveA").value.trim()||"?",B=$("#loveB").value.trim()||"?";
+    if(!Number.isFinite(n)||n<0){$("#loveLog").textContent="Invalid input. Please enter a number of reasons.";sfx("error");return}
+    const go=$("#loveGo");go.disabled=true;$("#loveOut").innerHTML="";let k=0;
+    const st=CONTENT.loveStatuses,timer=setInterval(()=>{
+      k++;$("#loveBar").style.width=Math.min(100,k*10)+"%";$("#loveLog").textContent=st[Math.min(st.length-1,Math.floor(k/2))];sfx("click");
+      if(k>=10){clearInterval(timer);go.disabled=false;
+        const warn=/tojo/i.test(B)||/tojo/i.test(A)?"":`<div class="small">Warning: unrecognised partner "${esc(B)}". Did you mean Tojo?</div>`;
+        $("#loveOut").innerHTML=`COMPATIBILITY (${esc(A)} ♥ ${esc(B)}): 100%<br><span class="glitch">ERROR 418: AFFECTION OVERFLOW</span><div style="font-family:var(--fnt);font-size:19px;color:var(--ink)">${n.toLocaleString()} reasons × 1,000,000 = ${(n*1e6).toLocaleString()} units of affection, and counting.</div>${warn}`;
+        $("#loveLog").textContent="Calculation complete. Calculator has requested a lie-down.";
+        sfx("win");unlock("love");
+      }
+    },160);
+  };
+}
+
+/* ============================ BUGS ============================ */
+function renderBugs(){
+  const all=[...CONTENT.bugs,...S.bugs];
+  $("#bugList").innerHTML=all.map((b,i)=>`<div class="panel"><span class="pill ${b.status.toLowerCase().replace(/\s/g,"")}">${esc(b.status)}</span> <b>BUG #${String(i+1).padStart(3,"0")} — ${esc(b.title)}</b><p>${esc(b.text)}</p></div>`).join("");
+}
+function buildBugs(){
+  renderBugs();
+  const submit=()=>{
+    const v=$("#bugInput").value.trim();
+    if(!v){$("#bugReply").textContent="Please describe the offence first.";sfx("error");return}
+    const r={status:pick(CONTENT.bugStatuses),title:v,text:pick(CONTENT.bugReplies)};
+    S.bugs.push(r);save();renderBugs();$("#bugInput").value="";
+    $("#bugReply").textContent=`Report received. Status: ${r.status}. Thank you for your service.`;
+    sfx("coin");unlock("bug");
+    const body=$("#win-bugs .window-body");body.scrollTop=body.scrollHeight;
+  };
+  $("#bugSubmit").onclick=submit;$("#bugInput").onkeydown=e=>{if(e.key==="Enter")submit()};
+}
+
+/* ============================ FUTURE ============================ */
+function renderFuture(){
+  const items=[...CONTENT.future.map((t,i)=>({id:"c"+i,t})),...S.customFuture.map((t,i)=>({id:"u"+i,t}))];
+  const done=items.filter(x=>S.future[x.id]).length;
+  $("#futProg").textContent=done+" / "+items.length+" ADVENTURES COMPLETED";
+  $("#futBar").style.width=(items.length?done/items.length*100:0)+"%";
+  $("#futList").innerHTML=items.map(x=>`<div class="panel fut${S.future[x.id]?" done":""}"><label><input type="checkbox" data-fut="${x.id}" ${S.future[x.id]?"checked":""}><span>${esc(x.t)}</span></label></div>`).join("");
+  $$("[data-fut]").forEach(c=>c.onchange=()=>{S.future[c.dataset.fut]=c.checked;save();if(c.checked)sfx("coin");renderFuture()});
+}
+function buildFuture(){
+  renderFuture();
+  const add=()=>{const v=$("#futInput").value.trim();if(!v)return;S.customFuture.push(v);save();$("#futInput").value="";renderFuture();sfx("coin");notify("New adventure added to the roadmap: "+v,{icon:"🚀",silent:true})};
+  $("#futAdd").onclick=add;$("#futInput").onkeydown=e=>{if(e.key==="Enter")add()};
+}
+
+/* ============================ TRIVIA ============================ */
+const TQ={i:0,score:0};
+function renderTrivia(){
+  const qs=CONTENT.trivia,body=$("#triviaBody");
+  if(TQ.i>=qs.length){
+    const rank=CONTENT.triviaRanks.find(([min])=>TQ.score>=min)[1];
+    body.innerHTML=`<div class="center"><div style="font-size:60px">${TQ.score===qs.length?"🏆":"📜"}</div><h2>QUIZ COMPLETE</h2><div class="q">${TQ.score} / ${qs.length}</div><p>${esc(rank)}</p><button class="btn primary" id="tAgain">↻ Play again</button></div>`;
+    $("#tAgain").onclick=()=>{TQ.i=0;TQ.score=0;renderTrivia()};
+    if(TQ.score===qs.length){unlock("trivia");confetti()}
+    return;
+  }
+  const q=qs[TQ.i];
+  body.innerHTML=`<h2>How well do you know us?</h2><div class="hud"><span>QUESTION ${TQ.i+1} / ${qs.length}</span><span>SCORE ${TQ.score}</span></div><div class="progress"><span style="width:${TQ.i/qs.length*100}%"></span></div><div class="q">${esc(q.q)}</div>${q.o.map((o,j)=>`<button class="choice" data-ans="${j}">${"ABCD"[j]}) ${esc(o)}</button>`).join("")}<div id="tFb" style="min-height:24px;margin-top:6px"></div>`;
+  $$("[data-ans]",body).forEach(b=>b.onclick=()=>{
+    const j=+b.dataset.ans,ok=q.a.includes(j);
+    $$("[data-ans]",body).forEach(x=>{x.disabled=true;if(q.a.includes(+x.dataset.ans))x.classList.add("right")});
+    if(!ok)b.classList.add("wrong");
+    if(ok)TQ.score++;
+    sfx(ok?"coin":"error");
+    $("#tFb").innerHTML=`<b>${ok?"Correct!":"Not quite."}</b> ${esc(q.note)} <button class="btn primary" id="tNext" style="margin-left:6px">Next ▸</button>`;
+    $("#tNext").onclick=()=>{TQ.i++;renderTrivia()};
+  });
+}
+
+/* ============================ WEATHER ============================ */
+function buildWeather(){
+  const w=CONTENT.weather;
+  $("#weatherBody").innerHTML=`
+  <div class="wx-now"><span class="wi">${w.now.icon}</span><div><div class="wt2">${esc(w.now.temp)}</div><div>${esc(w.now.desc)}</div></div></div>
+  <h3>Local time, both sides (same time zone ✓)</h3><div class="zones" id="zones"></div>
+  <p class="small">Distance between us: ${esc(w.distance)} · Hug index: <b style="color:#d63a7a">CRITICAL</b></p>
+  <h3>5-day forecast</h3>${w.forecast.map(([d,i,t])=>`<div class="wx-row"><b>${d}</b><span style="font-size:26px">${i}</span><span>${esc(t)}</span></div>`).join("")}`;
+  updateZones();
+}
+function updateZones(){
+  const z=$("#zones");if(!z)return;
+  z.innerHTML=CONTENT.weather.zones.map(zn=>`<div class="zone"><div style="font-size:30px">🌙</div><div class="zt">${esc(CONTENT.osTime.time)}</div><div>${esc(zn.label)}</div><div class="small" style="color:#cdb8ff">${esc(CONTENT.osTime.date)}</div></div>`).join("");
+}
+
+/* ============================ ARCADE ============================ */
+const allGames=()=>!!S.games.boss;
+function addScore(n){S.score+=n;save();$("#arcScore").textContent="SCORE: "+S.score}
+function completeGame(k,pts,ach){
+  if(S.games[k])return;
+  S.games[k]=true;S.score+=pts;save();unlock(ach);updateArcade();
+  if(allGames())setTimeout(celebrate,1200);
+}
+function updateArcade(){
+  const won=allGames();
+  $("#arcProg").textContent=won?"FINAL BOSS: DEFEATED ✓":"FINAL BOSS: NOT DEFEATED";$("#arcScore").textContent="SCORE: "+S.score;
+  const rw=$("#arcReward");
+  if(won){rw.className="unlock-banner won";rw.innerHTML=`🏆 <b>THE DISTANCE IS DEFEATED!</b> Emergency.exe is unlocked. <button class="btn primary" data-open="emergency">📼 Open it</button>`}
+  else{rw.className="unlock-banner";rw.innerHTML=`🔒 <b>Emergency.exe is locked.</b> Defeat THE DISTANCE to open it.`}
+  const q=`<li class="${won?"done":""}">${won?"☑":"☐"} Defeat THE DISTANCE in Games.exe</li><li class="${S.candles?"done":""}">${won?"🔓":"🔒"} Open Emergency.exe</li>`;
+  $("#questWidget").innerHTML=q;$("#emQuest").innerHTML=q;
+  const lock=$("#icon-emergency .lock");if(lock)lock.classList.toggle("hidden",won);
+  renderEmergency();renderMail();
+}
+function celebrate(){
+  const c=$("#celebrate");
+  c.innerHTML=`<div class="cele"><div class="trophy">🏆</div><div class="px">FINAL BOSS DEFEATED</div><p style="font-size:22px">THE DISTANCE has been defeated (for now).<br>Emergency.exe is now unlocked.</p><button class="btn big primary" id="celeGo">📼 Open Emergency.exe</button><br><button class="btn" id="celeLater" style="margin-top:8px">Later</button></div>`;
+  c.classList.remove("hidden");sfx("win");confetti();
+  $("#celeGo").onclick=()=>{c.classList.add("hidden");openApp("emergency")};
+  $("#celeLater").onclick=()=>c.classList.add("hidden");
+}
+
+/* -------- Final Boss: THE DISTANCE -------- */
+const cv=$("#bossCanvas"),cx=cv.getContext("2d"),BW=560,BH=260,GOAL=7;
+const B={run:false,x:280,items:[],parts:[],got:0,lives:3,time:45,last:0,keys:{},dir:0,px:null,spS:1,spC:1.5,inv:0,bx:280,msg:"PRESS START",sub:"Catch 7 memory stars ✦"};
+const bgStars=Array.from({length:40},(_,i)=>({x:(i*73)%BW,y:(i*47)%180,c:i%3?"#d7c5f5":"#fff0c9"}));
+function bossHud(){$("#bossStars").textContent=B.got+" / "+GOAL;$("#bossLives").textContent="♥".repeat(B.lives)+"♡".repeat(3-B.lives);$("#bossTime").textContent=Math.ceil(B.time)}
+function drawCloud(x,y,s,col,eyes){cx.fillStyle=col;cx.fillRect(x-14*s,y-4*s,28*s,10*s);cx.fillRect(x-10*s,y-9*s,12*s,8*s);cx.fillRect(x-1*s,y-11*s,11*s,9*s);if(eyes){cx.fillStyle="#2b1c45";cx.fillRect(x-7*s,y-2*s,3*s,3*s);cx.fillRect(x+4*s,y-2*s,3*s,3*s);cx.fillRect(x-8*s,y-4*s,4*s,1*s);cx.fillRect(x+4*s,y-4*s,4*s,1*s)}}
+function drawPlayer(x){
+  if(B.inv>0&&Math.floor(B.inv*12)%2)return;
+  const P=["..0000..",".011110.",".013130.",".011110.","..0110..",".222222.","22222222",".222222.",".33..33.",".33..33."];
+  drawMap(cx,P,x-12,214,3,{0:"#3a2a1a",1:"#f2c9a0",2:"#9672d8",3:"#2b1c45"});
+}
+function drawBoss(){
+  const g=cx.createLinearGradient(0,0,0,BH);g.addColorStop(0,"#1e1530");g.addColorStop(1,"#584078");cx.fillStyle=g;cx.fillRect(0,0,BW,BH);
+  bgStars.forEach(s=>{cx.fillStyle=s.c;cx.fillRect(s.x,s.y,2,2)});
+  cx.fillStyle="#d9c5ff";cx.fillRect(0,BH-14,BW,14);cx.fillStyle="#bda8df";for(let i=0;i<BW;i+=16)cx.fillRect(i,BH-14,8,4);
+  drawCloud(B.bx,34,3,"#8a7fa3",true);
+  cx.fillStyle="#2b1c45";cx.fillRect(B.bx-50,64,100,8);cx.fillStyle="#ff7ab6";cx.fillRect(B.bx-49,65,98*(1-B.got/GOAL),6);
+  cx.font='8px "Press Start 2P", monospace';cx.fillStyle="#fff";cx.textAlign="center";cx.fillText("THE DISTANCE",B.bx,84);
+  B.items.forEach(it=>{if(it.k==="s")drawMap(cx,STAR_MAP,it.x-10,it.y-9,3,{1:"#ffd86b",2:"#fff6c9"});else drawCloud(it.x,it.y,1.3,"#6b6380",true)});
+  B.parts.forEach(p=>{cx.globalAlpha=Math.max(0,p.l);cx.fillStyle=p.c;cx.fillRect(p.x,p.y,4,4);cx.globalAlpha=1});
+  drawPlayer(B.x);
+  if(!B.run){cx.fillStyle="#120b22aa";cx.fillRect(0,96,BW,80);cx.fillStyle="#fff";cx.font='16px "Press Start 2P", monospace';cx.fillText(B.msg,BW/2,132);cx.font='20px VT323, monospace';cx.fillStyle="#f7c9e8";cx.fillText(B.sub,BW/2,158)}
+  cx.textAlign="left";
+}
+function bossStart(){
+  cancelAnimationFrame(B.raf);
+  Object.assign(B,{run:true,x:280,items:[],parts:[],got:0,lives:3,time:45,last:performance.now(),spS:.6,spC:1.4,inv:0});
+  $("#bossStart").textContent="↻ RESTART";$("#bossStatus").textContent="Go! Catch the falling stars ✦";bossHud();
+  B.raf=requestAnimationFrame(bossFrame);
+}
+function bossEnd(win,why){
+  B.run=false;cancelAnimationFrame(B.raf);
+  if(win){B.msg="YOU WIN!";B.sub="The Distance has been defeated (for now).";$("#bossStatus").textContent="Victory! All memories recovered.";sfx("win");confetti("hearts",60);completeGame("boss",500,"boss")}
+  else{B.msg="TRY AGAIN";B.sub=why;$("#bossStatus").textContent=why+" Press START to try again.";sfx("error")}
+  $("#bossStart").textContent="▶ PLAY AGAIN";drawBoss();
+}
+function bossAbort(){if(B.run){B.run=false;cancelAnimationFrame(B.raf);B.msg="PAUSED";B.sub="Press START to try again";$("#bossStatus").textContent="Game paused.";$("#bossStart").textContent="▶ START";drawBoss()}}
+function bossFrame(ts){
+  if(!B.run)return;
+  const dt=Math.min(.05,(ts-B.last)/1000||.016);B.last=ts;B.time-=dt;
+  const k=B.keys;let mv=((k.ArrowLeft||k.a||k.A)?-1:0)+((k.ArrowRight||k.d||k.D)?1:0)+B.dir;
+  if(mv)B.x+=clamp(mv,-1,1)*290*dt;else if(B.px!=null)B.x+=clamp(B.px-B.x,-340*dt,340*dt);
+  B.x=clamp(B.x,14,BW-14);
+  B.bx=280+Math.sin(ts/1100)*170;
+  const prog=1-B.time/45;
+  B.spS-=dt;if(B.spS<=0){B.items.push({k:"s",x:clamp(B.bx+rand(-110,110),20,BW-20),y:70,vy:rand(75,105)});B.spS=rand(1.1,1.6)}
+  B.spC-=dt;if(B.spC<=0){B.items.push({k:"c",x:clamp(B.bx+rand(-150,150),20,BW-20),y:70,vy:rand(85,125)+prog*60});B.spC=Math.max(.55,rand(.9,1.4)-prog*.5)}
+  if(B.inv>0)B.inv-=dt;
+  B.items.forEach(it=>{it.y+=it.vy*dt;
+    if(!it.gone&&it.y>205&&it.y<248&&Math.abs(it.x-B.x)<22){
+      if(it.k==="s"){it.gone=true;B.got++;addScore(50);sfx("coin");for(let i=0;i<12;i++)B.parts.push({x:it.x,y:it.y,vx:rand(-90,90),vy:rand(-140,-30),l:1,c:i%2?"#ffd86b":"#fff"})}
+      else if(B.inv<=0){it.gone=true;B.lives--;B.inv=1.3;sfx("hit");$("#bossStatus").textContent="Ouch! A gloomy cloud. Keep going!"}
+    }});
+  B.items=B.items.filter(it=>!it.gone&&it.y<BH);
+  B.parts.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=300*dt;p.l-=dt*1.4});B.parts=B.parts.filter(p=>p.l>0);
+  bossHud();drawBoss();
+  if(B.got>=GOAL)return bossEnd(true);
+  if(B.lives<=0)return bossEnd(false,"The clouds got you this time.");
+  if(B.time<=0)return bossEnd(false,"Out of time — so close!");
+  B.raf=requestAnimationFrame(bossFrame);
+}
+function canvasX(e){const r=cv.getBoundingClientRect();return (e.clientX-r.left)*BW/r.width}
+cv.addEventListener("pointermove",e=>{if(e.pointerType==="mouse"||e.buttons)B.px=canvasX(e)});
+cv.addEventListener("pointerdown",e=>{B.px=canvasX(e);if(!B.run)bossStart()});
+cv.addEventListener("pointerleave",()=>B.px=null);
+$$(".hold").forEach(b=>{const d=+b.dataset.dir;b.addEventListener("pointerdown",e=>{e.preventDefault();B.dir=d;B.px=null});["pointerup","pointerleave","pointercancel"].forEach(ev=>b.addEventListener(ev,()=>{if(B.dir===d)B.dir=0}))});
+
+function buildGames(){
+  $("#bossStart").onclick=bossStart;bossHud();drawBoss();
+  if(document.fonts)document.fonts.ready.then(drawBoss);
+  updateArcade();
+}
+
+/* ============================ ACHIEVEMENTS ============================ */
+function renderAch(){
+  const ids=Object.keys(ACH),got=ids.filter(i=>S.ach[i]).length;
+  $("#trAch").textContent=" "+got;
+  $("#achCount").textContent=got+" / "+ids.length+" UNLOCKED";
+  $("#achScore").textContent="ARCADE SCORE: "+S.score;
+  $("#achBar").style.width=(got/ids.length*100)+"%";
+  $("#achList").innerHTML=ids.map(i=>{const a=ACH[i],u=S.ach[i];return `<div class="ach${u?"":" locked"}"><span class="ai">${u?a.i:"?"}</span><div><b>${u?esc(a.t):"???"}</b>${u?esc(a.d):"Keep exploring to unlock."}</div></div>`}).join("");
+}
+
+/* ============================ EMERGENCY ============================ */
+let emBuilt=false,letterTimer=null;
+function renderEmergency(){
+  const un=allGames();
+  $("#emLocked").classList.toggle("hidden",un);$("#emContent").classList.toggle("hidden",!un);
+  if(un&&!emBuilt)buildEmergency();
+}
+function buildEmergency(){
+  emBuilt=true;
+  $("#emIntro").textContent=CONTENT.emergencyIntro;
+  const cs=$("#candles");cs.innerHTML="";
+  for(let i=0;i<CONTENT.candles;i++){const c=el("button","candle"+(S.candles?" out":""),"<b></b><i></i>");c.setAttribute("aria-label","Candle "+(i+1));c.onclick=()=>blowCandle(c);cs.appendChild(c)}
+  if(S.candles)candlesDone(true);
+}
+function blowCandle(c){
+  if(c.classList.contains("out"))return;
+  c.classList.add("out");sfx("blow");
+  if($$(".candle:not(.out)").length===0){S.candles=true;save();unlock("candles");confetti();sfx("win");candlesDone(false);updateArcade();if(S.settings.sound)setTimeout(()=>playTrack(CONTENT.birthdaySong,true),900)}
+}
+function candlesDone(instant){
+  $("#cakeMsg").innerHTML=`WISH SAVED.<br><span style="font-family:var(--fnt);font-size:18px;color:#fff">(I can't read it. It's coming true anyway.)</span><br><button class="btn" id="relight" style="font-family:var(--fnt);font-size:16px;margin-top:6px">↻ Relight candles</button>`;
+  $("#relight").onclick=()=>{$$(".candle").forEach(c=>c.classList.remove("out"));$("#cakeMsg").textContent="MAKE ANOTHER WISH, THEN TAP EACH CANDLE"};
+  const rest=$("#emRest");
+  if(rest.classList.contains("hidden")){
+    rest.classList.remove("hidden");
+    $("#openLetter").onclick=openLetter;
+    $("#rollCredits").onclick=rollCredits;
+    $("#rereadLetter").onclick=openLetter;
+    if(!instant)setTimeout(()=>rest.scrollIntoView({behavior:"smooth",block:"start"}),900);
+  }
+}
+function openLetter(){
+  clearTimeout(letterTimer);
+  const wrap=$("#emLetter");
+  wrap.innerHTML=`<div class="letter"><span id="ltxt"></span><span class="caret">▌</span></div><button class="btn" id="lskip" style="margin-top:6px">Skip ▸▸</button>`;
+  const txt=CONTENT.letter+(CONTENT.signoff?"\n\n"+CONTENT.signoff:""),lt=$("#ltxt");let i=0;
+  const finish=()=>{clearTimeout(letterTimer);lt.textContent=txt;$(".caret",wrap)?.remove();$("#lskip")?.remove();$("#emEnd").classList.remove("hidden");unlock("letter");confetti("hearts",70)};
+  const step=()=>{i+=2;lt.textContent=txt.slice(0,i);if(i<txt.length)letterTimer=setTimeout(step,txt[i-1]==="\n"?220:26);else finish()};
+  $("#lskip").onclick=finish;step();
+}
+function rollCredits(){
+  const c=$("#credits");
+  c.innerHTML=`<div class="roll">${CONTENT.credits.map(([k,t])=>`<div class="${k}">${esc(t)||"&nbsp;"}</div>`).join("")}</div>`;
+  c.classList.remove("hidden");
+  if(S.settings.sound&&!MU.playing)playTrack(CONTENT.creditsSong);
+  const close=()=>{c.classList.add("hidden");c.innerHTML="";unlock("credits")};
+  c.onclick=close;$(".roll",c).addEventListener("animationend",close);
+}
+
+/* ============================ TERMINAL ============================ */
+const TERM={hist:[],hi:0};
+function tprint(text,cls){$("#termOut").appendChild(el("div","o "+(cls||""),esc(text)));const t=$("#term");t.scrollTop=t.scrollHeight}
+function runCmd(line){
+  tprint("C:\\ATULYA> "+line,"c");
+  if(!line.trim())return;
+  TERM.hist.push(line);TERM.hi=TERM.hist.length;unlock("hacker");
+  const parts=line.trim().split(/\s+/),cmd=parts[0].toLowerCase(),arg=parts.slice(1).join(" ").toLowerCase();
+  const C={
+    help:()=>tprint("Available commands:\n  help        this list\n  whoami      identify current user\n  date        today's date\n  ls / dir    list files\n  cat <file>  read a file\n  open <app>  open an app (try: open games)\n  apps        list apps\n  compliment  receive a compliment\n  fortune     read your fortune\n  hug         send a hug\n  love        display love\n  ping atulya check the connection\n  score       arcade score\n  unlock      how to unlock Emergency.exe\n  cls         clear screen\n  exit        close terminal\n\n(There may be other commands. Some are dangerous.)"),
+    whoami:()=>tprint("atulya — administrator, main character, birthday girl"),
+    date:()=>tprint(CONTENT.osTime.date+", "+CONTENT.osTime.time+" (the best day of the year)"),
+    ls:()=>tprint("feelings.txt   reasons.txt   secrets.txt   plans.txt   distance.sys"),
+    cat:()=>{const f={"feelings.txt":["Error: file too large to display (∞ KB).","e"],"reasons.txt":[CONTENT.compliments.slice(0,3).map((c,i)=>(i+1)+". "+c).join("\n"),""],"secrets.txt":["Access denied. Try: sudo cat secrets.txt","e"],"plans.txt":["See Future.exe. The roadmap is very ambitious.",""],"distance.sys":["System file. Status: temporary. Scheduled for deletion on the next visit.","g"]}[arg];f?tprint(f[0],f[1]):tprint("File not found: "+arg,"e")},
+    apps:()=>tprint(APPS.map(a=>a.id).join("  ")),
+    open:()=>{const a=APPS.find(x=>x.id===arg||x.name.toLowerCase().replace(".exe","")===arg.replace(".exe",""));a?(tprint("Opening "+a.name+"…","g"),openApp(a.id)):tprint("No such app. Type 'apps' to list them.","e")},
+    compliment:()=>tprint(pick(CONTENT.compliments),"g"),
+    fortune:()=>tprint("🥠 "+pick(CONTENT.fortunes),"g"),
+    hug:()=>tprint("Sending hug… [##########] 100%\nHug delivered. Note: virtual hugs are a temporary patch until the next visit.","g"),
+    love:()=>tprint("  ***   ***\n *****_*****\n ***********\n  *********\n    *****\n      *\n\nlove.exe is running. it cannot be stopped.","g"),
+    ping:()=>tprint(arg?`Pinging ${arg} [127.0.0.1 ♥] with 32 bytes of affection:\nReply from ${arg}: time=0ms (lives in my head rent-free)\nReply from ${arg}: time=0ms\nReply from ${arg}: time=0ms\nPackets: sent = 3, received = 3, lost = 0 (0% loss).`:"Usage: ping atulya"),
+    score:()=>tprint("Arcade score: "+S.score+" · Achievements: "+Object.keys(S.ach).length+"/"+Object.keys(ACH).length),
+    unlock:()=>tprint(allGames()?"Emergency.exe is already unlocked. Go on. Open it.":"Defeat the Final Boss in Games.exe. The Distance is waiting."),
+    cls:()=>{$("#termOut").innerHTML=""},
+    exit:()=>closeWin($("#win-terminal")),
+    sudo:()=>{if(/secret/.test(arg))tprint("Password accepted (all passwords are).\nsecrets.txt: You are my favourite person. Not much of a secret, honestly.","g");else if(/rm|del|stop/.test(arg)&&/feel|love/.test(arg))bsod();else tprint("atulya is not in the sudoers file. This incident will be reported… to Tojo, who will find it adorable.","e")},
+    rm:()=>{if(/feel|love|tojo/.test(arg))bsod();else tprint("Permission denied: some things are permanent.","e")},
+    echo:()=>tprint(parts.slice(1).join(" "))
+  };
+  C.dir=C.ls;C.clear=C.cls;C.del=C.rm;C.type=C.cat;
+  (C[cmd]||(()=>tprint(`'${parts[0]}' is not recognised as a command… but you are recognised as wonderful.`,"e")))();
+}
+function buildTerminal(){
+  tprint("ATULYA OS [Version 2.0.1110]\n(c) Department of Birthdays. All feelings reserved.\n\nType 'help' for a list of commands.\n");
+  const inp=$("#termIn");
+  inp.addEventListener("keydown",e=>{
+    if(e.key==="Enter"){const v=inp.value;inp.value="";runCmd(v)}
+    else if(e.key==="ArrowUp"){if(TERM.hi>0)inp.value=TERM.hist[--TERM.hi];e.preventDefault()}
+    else if(e.key==="ArrowDown"){if(TERM.hi<TERM.hist.length-1)inp.value=TERM.hist[++TERM.hi];else{TERM.hi=TERM.hist.length;inp.value=""}e.preventDefault()}
+  });
+  $("#term").addEventListener("click",()=>inp.focus());
+}
+
+/* ============================ CONTROL PANEL / BIN ============================ */
+const WALLS=[["nebula","Nebula","linear-gradient(145deg,#352450,#4b3470,#251a3d)"],["sunset","Sunset","linear-gradient(#ffb3c7,#c58ad8,#5b3b8c)"],["mint","Mint","linear-gradient(#c9f2e3,#a7d8dc,#7f9fd0)"],["grid","Synthwave","linear-gradient(#170a2b,#3a1d5c 60%,#ff7ab6)"]];
+function applySettings(){
+  document.body.dataset.wall=S.settings.wall;
+  $("#trSound").textContent=S.settings.sound?"🔊":"🔇";
+  $("#setSound").checked=S.settings.sound;$("#setNotes").checked=S.settings.notes;$("#setSaver").checked=S.settings.saver;
+  $$(".wall").forEach(w=>w.classList.toggle("on",w.dataset.wall===S.settings.wall));
+}
+function buildControl(){
+  $("#walls").innerHTML=WALLS.map(([id,n,bg])=>`<button class="wall" data-wall="${id}"><div class="sw" style="background:${bg}"></div><span>${n}</span></button>`).join("");
+  $$(".wall").forEach(w=>w.onclick=()=>{S.settings.wall=w.dataset.wall;save();applySettings();sfx("click")});
+  $("#setSound").onchange=e=>setSound(e.target.checked);
+  $("#setNotes").onchange=e=>{S.settings.notes=e.target.checked;save()};
+  $("#setSaver").onchange=e=>{S.settings.saver=e.target.checked;save()};
+  $("#resetAll").onclick=()=>{if(confirm("Reset all progress, games and achievements? This cannot be undone.")){try{localStorage.removeItem(SAVE_KEY)}catch(e){}location.reload()}};
+  if(PARAMS.has("dev")){
+    $("#devPanel").classList.remove("hidden");
+    $("#devWin").onclick=()=>{S.games.boss=true;save();updateArcade();unlock("boss");celebrate()};
+    $("#devBsod").onclick=bsod;$("#devSaver").onclick=startSaver;$("#devBoot").onclick=restart;$("#devCredits").onclick=rollCredits;
+  }
+}
+function setSound(on){S.settings.sound=on;save();applySettings();if(!on)stopMusic();else sfx("notify")}
+$("#trSound").onclick=()=>setSound(!S.settings.sound);
+function buildBin(){
+  $("#binList").innerHTML=CONTENT.recycle.map(([i,n,s,note],k)=>`<div class="bin-row"><span class="bi">${i}</span><div><b>${esc(n)}</b> <span class="small">· ${esc(s)}</span><br><span class="small">${esc(note)}</span></div><button class="btn" data-restore="${k}">Restore</button></div>`).join("");
+  const replies=["Restore failed: this file is better off deleted.","Error: file refuses to come back. Can't blame it.","Restoring… just kidding. It stays in the bin.","Access denied by the Department of Good Decisions."];
+  $$("[data-restore]").forEach(b=>b.onclick=()=>{$("#binMsg").textContent=pick(replies);sfx("error");unlock("trash")});
+  $("#emptyBin").onclick=()=>{$("#binMsg").textContent="Error: some things are unrecoverably deleted. Like my chill. The bin remains full, out of respect.";sfx("error")};
+}
+
+/* ============================ SHUTDOWN / BSOD / RESTART ============================ */
+function shutdownDialog(){
+  closeStart();unlock("shutdown");
+  const d=$("#dialog");
+  d.innerHTML=`<div class="dlg"><div class="titlebar"><span class="ti">⏻</span><span class="t">Shut Down ATULYA OS</span><span class="wc"><button data-x aria-label="Close">×</button></span></div><div class="dlg-body"><div class="row"><span style="font-size:44px">🖥️</span><p>What do you want the computer to do?</p></div><div class="dlg-btns"><button class="btn primary" id="dStay">Stay with me</button><button class="btn" id="dRestart">Restart</button><button class="btn" id="dShut">Shut down</button></div><p class="small" id="dMsg" style="min-height:20px"></p></div></div>`;
+  d.classList.remove("hidden");sfx("notify");
+  const close=()=>{d.classList.add("hidden");d.innerHTML=""};
+  d.querySelector("[data-x]").onclick=close;d.onclick=e=>{if(e.target===d)close()};
+  $("#dStay").onclick=()=>{close();notify("Good choice. The system is very relieved.",{icon:"💜"})};
+  $("#dRestart").onclick=()=>{close();restart()};
+  let n=0;const sh=$("#dShut"),L=CONTENT.shutdownLines;
+  const dodge=()=>{if(sh.disabled)return;sh.textContent=L[Math.min(n,L.length-1)];n++;sh.style.transform=`translate(${Math.round(rand(-120,60))}px,${Math.round(rand(-30,8))}px)`;sfx("click");
+    $("#dMsg").textContent="The shutdown button appears to be avoiding you.";if(n>=L.length){sh.disabled=true;$("#dMsg").textContent="Shutdown.exe has left the chat. Looks like you're staying."}};
+  sh.addEventListener("pointerenter",e=>{if(e.pointerType==="mouse")dodge()});
+  sh.onclick=dodge;
+}
+function bsod(){
+  const b=$("#bsod");
+  b.innerHTML=`<div class="bsod-in"><div class="bsod-title">ATULYA OS</div><p>A fatal exception 0xL0V3 has occurred at 0028:C0FFEE in module FEELINGS.SYS. The current operation has been terminated.</p><p>* Cause: attempted to delete feelings. Feelings cannot be deleted.</p><p>* Press any key to continue loving Atulya.</p><p>* Press CTRL+ALT+DEL to also continue loving Atulya.</p><p class="center" style="margin-top:28px">Press any key to continue <span class="cur">_</span></p></div>`;
+  b.classList.remove("hidden");sfx("error");
+  const t0=Date.now();
+  const off=()=>{if(Date.now()-t0<900)return;b.classList.add("hidden");removeEventListener("keydown",off);b.removeEventListener("pointerdown",off);unlock("bsod");notify("System recovered. Feelings were not deleted. They cannot be deleted.",{icon:"💙"})};
+  addEventListener("keydown",off);b.addEventListener("pointerdown",off);
+}
+function restart(){closeAll();closeLightbox();stopMusic();bossAbort();runBoot()}
+
+/* ============================ SCREENSAVER / FX ============================ */
+let idleAt=Date.now(),saverOn=false,saverAt=0,saverRaf=0;
+["pointermove","pointerdown","keydown","wheel","touchstart"].forEach(ev=>addEventListener(ev,()=>{idleAt=Date.now();if(saverOn&&Date.now()-saverAt>700)stopSaver()},{passive:true}));
+function startSaver(){
+  if(saverOn)return;saverOn=true;saverAt=Date.now();
+  const c=$("#saver");c.classList.remove("hidden");c.width=innerWidth;c.height=innerHeight;const x=c.getContext("2d");
+  const hs=Array.from({length:26},()=>({x:rand(0,c.width),y:rand(0,c.height),s:Math.floor(rand(2,6)),v:rand(20,60),col:pick(["#f7c9e8","#d9c5ff","#9672d8","#ffd86b"])}));
+  let tx=rand(40,c.width-300),ty=rand(60,c.height-60),vx=70,vy=50,last=performance.now();
+  const loop=ts=>{if(!saverOn)return;const dt=Math.min(.05,(ts-last)/1000);last=ts;
+    x.fillStyle="#000";x.fillRect(0,0,c.width,c.height);
+    hs.forEach(h=>{h.y-=h.v*dt;if(h.y<-30){h.y=c.height+20;h.x=rand(0,c.width)}drawMap(x,HEART_MAP,h.x,h.y,h.s,{1:h.col})});
+    tx+=vx*dt;ty+=vy*dt;if(tx<10||tx>c.width-330)vx*=-1;if(ty<30||ty>c.height-50)vy*=-1;
+    x.font='18px "Press Start 2P", monospace';x.fillStyle="#f7c9e8";x.fillText("ATULYA OS · STANDBY",tx,ty);
+    x.font='24px VT323, monospace';x.fillStyle="#cdb8ff";x.fillText("(still thinking about you)",tx,ty+30);
+    saverRaf=requestAnimationFrame(loop)};
+  saverRaf=requestAnimationFrame(loop);unlock("screensaver");
+}
+function stopSaver(){saverOn=false;cancelAnimationFrame(saverRaf);$("#saver").classList.add("hidden")}
+setInterval(()=>{if(!booting&&S.settings.saver&&!saverOn&&!MU.playing&&!B.run&&Date.now()-idleAt>90000)startSaver()},3000);
+
+const FX={p:[],raf:0};
+function confetti(kind="confetti",n=150){
+  const c=$("#fx");c.width=innerWidth;c.height=innerHeight;
+  const cols=["#f7c9e8","#d9c5ff","#9672d8","#ffd86b","#9dffb0","#ff7ab6","#fff"];
+  for(let i=0;i<n;i++)FX.p.push({x:rand(0,c.width),y:rand(-c.height*.6,-10),vx:rand(-50,50),vy:rand(90,230),r:rand(0,6),vr:rand(-6,6),s:rand(5,10),col:pick(cols),k:kind});
+  if(!FX.raf){let last=performance.now();const x=c.getContext("2d");
+    const loop=ts=>{const dt=Math.min(.05,(ts-last)/1000);last=ts;x.clearRect(0,0,c.width,c.height);
+      FX.p.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.r+=p.vr*dt;
+        if(p.k==="hearts")drawMap(x,HEART_MAP,p.x,p.y,Math.round(p.s/3),{1:p.col});
+        else{x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.col;x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);x.restore()}});
+      FX.p=FX.p.filter(p=>p.y<c.height+20);
+      if(FX.p.length)FX.raf=requestAnimationFrame(loop);else{FX.raf=0;x.clearRect(0,0,c.width,c.height)}};
+    FX.raf=requestAnimationFrame(loop)}
+}
+
+/* ============================ KEYS ============================ */
+const KONAMI=["ArrowUp","ArrowUp","ArrowDown","ArrowDown","ArrowLeft","ArrowRight","ArrowLeft","ArrowRight","b","a"];let kq=[];
+addEventListener("keydown",e=>{
+  B.keys[e.key]=true;
+  if(B.run&&["ArrowLeft","ArrowRight"," "].includes(e.key)&&e.target.tagName!=="INPUT")e.preventDefault();
+  if(e.key==="Escape"){if(!$("#lightbox").classList.contains("hidden"))closeLightbox();else if(!$("#credits").classList.contains("hidden"))$("#credits").click();else closeStart()}
+  if(lbKeys&&!$("#lightbox").classList.contains("hidden"))lbKeys(e.key);
+  kq.push(e.key.length===1?e.key.toLowerCase():e.key);kq=kq.slice(-KONAMI.length);
+  if(kq.join()===KONAMI.join()){kq=[];confetti("hearts",120);sfx("win");notify("Cheat activated: infinite love. (It was already infinite.)",{icon:"🎮"});unlock("konami")}
+});
+addEventListener("keyup",e=>{B.keys[e.key]=false});
+addEventListener("blur",()=>{B.keys={}});
+
+/* ============================ TABS ============================ */
+function setupTabs(root,onChange){
+  const tabs=$$(".tab",root);
+  tabs.forEach(t=>t.addEventListener("click",()=>{
+    tabs.forEach(x=>x.classList.toggle("active",x===t));
+    $$("[data-pane]",root).forEach(p=>p.classList.toggle("hidden",p.dataset.pane!==t.dataset.tab));
+    sfx("click");onChange&&onChange(t.dataset.tab);
+  }));
+}
+
+/* ============================ BOOT ============================ */
+let booting=true,bootTimer=null;
+function runBoot(){
+  booting=true;clearTimeout(bootTimer);
+  const boot=$("#boot");boot.classList.remove("hidden");
+  $("#bios").classList.remove("hidden");$("#splash").classList.add("hidden");$("#login").classList.add("hidden");
+  const pre=$("#biosText");pre.textContent="";let i=0,done=false;
+  const L=CONTENT.bootLines;
+  const skip=()=>{if(!done){done=true;clearTimeout(bootTimer);cleanup();splash()}};
+  const cleanup=()=>{removeEventListener("keydown",skip);boot.removeEventListener("pointerdown",skip)};
+  const next=()=>{if(done)return;if(i<L.length){pre.textContent+=L[i++]+"\n";bootTimer=setTimeout(next,i===1?500:rand(80,220))}else{bootTimer=setTimeout(skip,600)}};
+  setTimeout(()=>{addEventListener("keydown",skip);boot.addEventListener("pointerdown",skip)},50);
+  next();
+}
+function splash(){
+  $("#bios").classList.add("hidden");$("#splash").classList.remove("hidden");
+  let p=0;const msgs=CONTENT.loadingMessages;
+  const step=()=>{p+=rand(4,11);$("#bootBar").style.width=Math.min(100,p)+"%";$("#bootMsg").textContent=msgs[Math.min(msgs.length-1,Math.floor(p/100*msgs.length))];
+    if(p<100)bootTimer=setTimeout(step,rand(90,200));else bootTimer=setTimeout(showLogin,500)};
+  step();
+}
+function showLogin(){
+  $("#splash").classList.add("hidden");$("#login").classList.remove("hidden");
+  const p=CONTENT.profile;
+  $("#loginAv").innerHTML=p.avatarSrc?`<img src="${esc(encodeURI(p.avatarSrc))}" alt="">`:p.avatar;
+  $("#loginName").textContent=CONTENT.her.toUpperCase();$("#loginDate").textContent=CONTENT.osTime.date+" · "+CONTENT.osTime.time;$("#loginHint").textContent=CONTENT.loginHint;$("#loginReply").textContent="";
+  const pw=$("#loginPw");pw.value="";setTimeout(()=>pw.focus(),50);
+}
+$("#loginForm").addEventListener("submit",e=>{
+  e.preventDefault();ac();
+  $("#loginReply").textContent=pick(CONTENT.loginReplies);sfx("coin");
+  setTimeout(enterDesktop,900);
+});
+function enterDesktop(){
+  booting=false;$("#boot").classList.add("hidden");
+  sfx("start");S.visits++;save();
+  unlock("login");
+  setTimeout(()=>notify(CONTENT.welcome,{icon:"💜",title:"WELCOME BACK"}),1300);
+  if(S.visits===1||PARAMS.has("readme"))setTimeout(()=>openApp("readme"),600);
+}
+let noteIx=Math.floor(Math.random()*CONTENT.notifications.length);
+setInterval(()=>{if(!booting&&S.settings.notes&&!saverOn&&$("#celebrate").classList.contains("hidden"))notify(CONTENT.notifications[noteIx++%CONTENT.notifications.length])},48000);
+
+/* ============================ INIT ============================ */
+APP.music.onOpen=()=>{if(MU.playing)viz()};
+APP.games.onClose=bossAbort;
+APP.emergency.onOpen=renderEmergency;
+APP.emergency.onClose=()=>{clearTimeout(letterTimer)};
+APP.trivia.onOpen=()=>{if(!$("#triviaBody").innerHTML)renderTrivia()};
+APP.terminal.onOpen=()=>setTimeout(()=>$("#termIn").focus(),50);
+APP.inbox.onOpen=renderMail;
+APP.achievements.onOpen=renderAch;
+
+initWindows();buildDesktop();buildAbout();buildMusic();buildLove();buildBugs();buildFuture();buildWeather();buildGames();buildTerminal();buildControl();buildBin();
+renderAch();applySettings();renderTrivia();tick();setInterval(tick,1000);
+if(PARAMS.has("skipboot")){$("#boot").classList.add("hidden");booting=false;S.visits++;save()}else runBoot();
+</script>
+</body>
+</html>
